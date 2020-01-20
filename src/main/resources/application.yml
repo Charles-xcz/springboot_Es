@@ -1,0 +1,11 @@
+#Es配置信息
+elasticsearch:
+  host: localhost
+  port: 9300
+  cluster-name: charles
+  index: blog
+  type: doc
+
+#服务器端口
+server:
+  port: 80
