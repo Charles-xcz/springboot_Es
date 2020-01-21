@@ -1,13 +1,11 @@
-package com.ustc.charles.Model;
+package com.ustc.charles.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
 
-/**
- * Created by baishuai on 2018/12/18
- */
+
 @Data
 public class Order {
 
