@@ -4,12 +4,11 @@ import com.ustc.charles.dao.QueryDao;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
 import com.ustc.charles.util.HitsToBeanUtil;
-import org.elasticsearch.action.get.GetRequestBuilder;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -66,7 +65,23 @@ public class QueryDaoImpl implements QueryDao {
     public List<House> queryAll(Es es) {
         SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType()).get();
         return HitsToBeanUtil.hitsToBeans(response.getHits());
+    }
 
+    @Override
+    public List<House> queryBySplitPage(Es es, Integer currentPage, Integer pageSize) {
+        SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
+                .setFrom((currentPage - 1) * pageSize)
+                .setSize(pageSize).get();
+        return HitsToBeanUtil.hitsToBeans(response.getHits());
+    }
 
+    @Override
+    public List<House> querySorted(Es es, String field, String content) {
+        SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
+                .setQuery(QueryBuilders.termQuery(field, content))
+                .addSort(SortBuilders.scoreSort().order(SortOrder.DESC))
+                .setFrom(0)
+                .setSize(1000).get();
+        return HitsToBeanUtil.hitsToBeans(response.getHits());
     }
 }

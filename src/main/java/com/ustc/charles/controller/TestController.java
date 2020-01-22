@@ -52,6 +52,16 @@ public class TestController {
         return queryDao.queryAll(es);
     }
 
+    @RequestMapping("/page/{current}/{size}")
+    public List<House> queryBySplitPage(@PathVariable("current") Integer current,
+                                        @PathVariable("size") Integer size) {
+        return queryDao.queryBySplitPage(es, current, size);
+    }
+
+    @RequestMapping("/delete/{id}")
+    public String delete(@PathVariable("id") String id) {
+        return houseDao.deleteById(es, id);
+    }
 
     @RequestMapping("/search/{name}")
     public List<House> searchByName(@PathVariable("name") String name) {

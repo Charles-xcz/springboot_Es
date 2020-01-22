@@ -3,8 +3,6 @@ package com.ustc.charles.dao;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
 
-import java.util.List;
-
 /**
  * @author charles
  * @date 2020/1/21 10:39
@@ -24,8 +22,9 @@ public interface HouseDao {
      *
      * @param es -> index,type
      * @param id 房屋id
+     * @return result
      */
-    void deleteById(Es es, String id);
+    String deleteById(Es es, String id);
 
     /**
      * 更新房屋信息

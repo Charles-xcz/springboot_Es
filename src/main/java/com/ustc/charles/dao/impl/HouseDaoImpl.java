@@ -12,8 +12,6 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
  * 房屋信息的基本crud
  *
@@ -33,9 +31,9 @@ public class HouseDaoImpl implements HouseDao {
     }
 
     @Override
-    public void deleteById(Es es, String id) {
+    public String deleteById(Es es, String id) {
         DeleteResponse deleteResponse = client.prepareDelete(es.getIndex(), es.getType(), id).get();
-        System.out.println(deleteResponse.toString());
+        return deleteResponse.getResult().toString();
     }
 
     @Override

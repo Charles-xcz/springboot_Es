@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * 工具类:将搜索内容封装为List<House>
+ *
  * @author charles
  * @date 2020/1/21 13:48
  */

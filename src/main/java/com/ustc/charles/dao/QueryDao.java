@@ -35,8 +35,8 @@ public interface QueryDao {
     /**
      * 搜索条件全部满足
      *
-     * @param es es
-     * @param type houseType
+     * @param es     es
+     * @param type   houseType
      * @param layout layout
      * @param region region
      * @return List<House>
@@ -46,8 +46,8 @@ public interface QueryDao {
     /**
      * 搜索条件任意满足
      *
-     * @param es es
-     * @param type houseType
+     * @param es     es
+     * @param type   houseType
      * @param layout layout
      * @param region region
      * @return List<House>
@@ -55,12 +55,30 @@ public interface QueryDao {
     List<House> queryShould(Es es, String type, String layout, String region);
 
     /**
-     * 所有房屋信息
+     * 查询所有房屋信息
      *
      * @param es -> index,type
      * @return List<House>
      */
     List<House> queryAll(Es es);
 
+    /**
+     * 分页查询房屋信息
+     *
+     * @param es          index,type
+     * @param currentPage 当前页
+     * @param pageSize    每页信息条数
+     * @return List<House>
+     */
+    List<House> queryBySplitPage(Es es, Integer currentPage, Integer pageSize);
 
+    /**
+     * 排序查询,依据得分降序排列
+     *
+     * @param es        index,type
+     * @param field 检索字段
+     * @param content   检索内容
+     * @return List<House>
+     */
+    List<House> querySorted(Es es, String field, String content);
 }
