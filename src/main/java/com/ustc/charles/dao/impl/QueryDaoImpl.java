@@ -25,6 +25,23 @@ public class QueryDaoImpl implements QueryDao {
     private TransportClient client;
 
     @Override
+    public List<House> indexSplitPage(Es es, Integer currentPage, Integer pageSize) {
+        SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
+                .setFrom((currentPage - 1) * pageSize)
+                .setSize(pageSize).get();
+        return HitsToBeanUtil.hitsToBeans(response.getHits());
+    }
+
+    @Override
+    public List<House> indexSplitPage(Es es, Integer currentPage, Integer pageSize, String field) {
+        SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
+                .addSort(SortBuilders.fieldSort(field).order(SortOrder.DESC).unmappedType("date"))
+                .setFrom((currentPage - 1) * pageSize)
+                .setSize(pageSize).get();
+        return HitsToBeanUtil.hitsToBeans(response.getHits());
+    }
+
+    @Override
     public List<House> queryByName(Es es, String name) {
         SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
                 .setQuery(QueryBuilders.matchPhraseQuery("name", name)).get();
@@ -58,20 +75,6 @@ public class QueryDaoImpl implements QueryDao {
                         .should(QueryBuilders.matchPhraseQuery("house_type", type))
                         .should(QueryBuilders.matchPhraseQuery("layout", layout))
                         .should(QueryBuilders.matchPhraseQuery("region", region))).get();
-        return HitsToBeanUtil.hitsToBeans(response.getHits());
-    }
-
-    @Override
-    public List<House> queryAll(Es es) {
-        SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType()).get();
-        return HitsToBeanUtil.hitsToBeans(response.getHits());
-    }
-
-    @Override
-    public List<House> queryBySplitPage(Es es, Integer currentPage, Integer pageSize) {
-        SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
-                .setFrom((currentPage - 1) * pageSize)
-                .setSize(pageSize).get();
         return HitsToBeanUtil.hitsToBeans(response.getHits());
     }
 

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 /**
  * @author charles
  * @date 2020/1/20 16:38
@@ -23,18 +25,22 @@ public class House {
     private String latitude;
     private String layout;
     private String floor;
-    private String area;
+    private Double area;
     private String design;
     private String decorate;
     private String lift;
     @JSONField(name = "lift_proportion")
     private String liftProportion;
     @JSONField(name = "total_price")
-    private Integer totalPrice;
+    private Double totalPrice;
     @JSONField(name = "avg_price")
-    private Integer avgPrice;
+    private Double avgPrice;
     private String region;
     private String local;
     private String community;
+    @JSONField(name = "create_time")
+    private Date createTime;
+    @JSONField(name = "update_time")
+    private Date updateTime;
 
 }

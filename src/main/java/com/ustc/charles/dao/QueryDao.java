@@ -14,6 +14,27 @@ import java.util.List;
 public interface QueryDao {
 
     /**
+     * 分页查询所有房屋信息,默认排序
+     *
+     * @param es          index,type
+     * @param currentPage 当前页
+     * @param pageSize    每页信息条数
+     * @return List<House>
+     */
+    List<House> indexSplitPage(Es es, Integer currentPage, Integer pageSize);
+
+    /**
+     * 分页查询所有房屋信息,根据字段field排序
+     *
+     * @param es          index,type
+     * @param currentPage 当前页
+     * @param pageSize    每页信息条数
+     * @param field 排序字段
+     * @return List<House>
+     */
+    List<House> indexSplitPage(Es es, Integer currentPage, Integer pageSize, String field);
+
+    /**
      * 根据房屋name查询
      *
      * @param es   es
@@ -55,29 +76,11 @@ public interface QueryDao {
     List<House> queryShould(Es es, String type, String layout, String region);
 
     /**
-     * 查询所有房屋信息
-     *
-     * @param es -> index,type
-     * @return List<House>
-     */
-    List<House> queryAll(Es es);
-
-    /**
-     * 分页查询房屋信息
-     *
-     * @param es          index,type
-     * @param currentPage 当前页
-     * @param pageSize    每页信息条数
-     * @return List<House>
-     */
-    List<House> queryBySplitPage(Es es, Integer currentPage, Integer pageSize);
-
-    /**
      * 排序查询,依据得分降序排列
      *
-     * @param es        index,type
-     * @param field 检索字段
-     * @param content   检索内容
+     * @param es      index,type
+     * @param field   检索字段
+     * @param content 检索内容
      * @return List<House>
      */
     List<House> querySorted(Es es, String field, String content);

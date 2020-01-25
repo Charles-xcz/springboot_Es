@@ -4,8 +4,11 @@ elasticsearch:
   port: 9300
   cluster-name: charles
   index: house
-  type: 1
+  type: lianjia
 
 #服务器端口
 server:
   port: 80
+spring:
+  mvc:
+    static-path-pattern: /static/**
