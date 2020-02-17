@@ -3,6 +3,7 @@ package com.ustc.charles.controller;
 import com.ustc.charles.dao.HouseDao;
 import com.ustc.charles.dao.QueryDao;
 import com.ustc.charles.dto.PaginationDTO;
+import com.ustc.charles.dto.QueryParam;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author charles
@@ -28,8 +33,13 @@ public class TestController {
     private QueryDao queryDao;
 
     @RequestMapping("/count")
-    public Long index() {
+    public Long count() {
         return houseDao.getCount(es);
+    }
+
+    @RequestMapping({"/index", "/"})
+    public String index() {
+        return "redirect:/index/1/20/default";
     }
 
     @RequestMapping("/index/{current}/{size}/{field}")
@@ -38,7 +48,7 @@ public class TestController {
                                      @PathVariable("field") String field,
                                      Model model) {
         List<House> houses;
-        if ("defult".equals(field)) {
+        if ("default".equals(field)) {
             houses = queryDao.indexSplitPage(es, current, size);
         } else {
             houses = queryDao.indexSplitPage(es, current, size, field);
@@ -50,6 +60,14 @@ public class TestController {
         model.addAttribute("pagination", paginationDTO);
         model.addAttribute("field", field);
         return "index";
+    }
+
+    @RequestMapping("/house/detail/{id}")
+    public String detail(@PathVariable("id") String id, Model model) {
+        List<House> houses = queryDao.queryById(es, id);
+        House house = houses.get(0);
+        model.addAttribute("house", house);
+        return "detail";
     }
 
     @RequestMapping("/delete/{id}")
@@ -65,5 +83,19 @@ public class TestController {
     @RequestMapping("/search/{low}/{high}")
     public List<House> searchPrice(@PathVariable("low") Integer low, @PathVariable("high") Integer high) {
         return queryDao.queryByPriceRange(es, low, high);
+    }
+
+    @RequestMapping("/query/{current}/{size}")
+    public String boolQuery(@PathVariable("current") Integer current,
+                            @PathVariable("size") Integer size,
+                            QueryParam queryParam, Model model) {
+        List<House> houses = queryDao.queryShould(es, queryParam, current, size);
+        PaginationDTO paginationDTO = new PaginationDTO();
+        int totalPage = (int) (houseDao.getCount(es) / size);
+        paginationDTO.setPagination(totalPage, current, size);
+        model.addAttribute("houses", houses);
+        model.addAttribute("pagination", paginationDTO);
+        model.addAttribute("keyword", queryParam.getKeyword());
+        return "search";
     }
 }

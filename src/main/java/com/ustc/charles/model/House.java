@@ -42,5 +42,4 @@ public class House {
     private Date createTime;
     @JSONField(name = "update_time")
     private Date updateTime;
-
 }

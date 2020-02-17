@@ -1,5 +1,6 @@
 package com.ustc.charles.dao;
 
+import com.ustc.charles.dto.QueryParam;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
 
@@ -29,10 +30,19 @@ public interface QueryDao {
      * @param es          index,type
      * @param currentPage 当前页
      * @param pageSize    每页信息条数
-     * @param field 排序字段
+     * @param field       排序字段
      * @return List<House>
      */
     List<House> indexSplitPage(Es es, Integer currentPage, Integer pageSize, String field);
+
+    /**
+     * 根据房屋id查询
+     *
+     * @param es es
+     * @param id id
+     * @return List<House>
+     */
+    List<House> queryById(Es es, String id);
 
     /**
      * 根据房屋name查询
@@ -67,13 +77,13 @@ public interface QueryDao {
     /**
      * 搜索条件任意满足
      *
-     * @param es     es
-     * @param type   houseType
-     * @param layout layout
-     * @param region region
+     * @param es      es
+     * @param queryParam 搜索条件
+     * @param currentPage currentPage
+     * @param pageSize pageSize
      * @return List<House>
      */
-    List<House> queryShould(Es es, String type, String layout, String region);
+    List<House> queryShould(Es es, QueryParam queryParam, Integer currentPage, Integer pageSize);
 
     /**
      * 排序查询,依据得分降序排列
