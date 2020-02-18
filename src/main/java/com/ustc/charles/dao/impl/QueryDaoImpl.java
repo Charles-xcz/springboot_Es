@@ -2,18 +2,16 @@ package com.ustc.charles.dao.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ustc.charles.dao.QueryDao;
-import com.ustc.charles.dto.QueryParam;
+import com.ustc.charles.dto.QueryParamDTO;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
+import com.ustc.charles.util.EsUtils;
 import com.ustc.charles.util.HitsToBeanUtil;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -21,6 +19,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +101,10 @@ public class QueryDaoImpl implements QueryDao {
     }
 
     @Override
-    public List<House> queryShould(Es es, QueryParam queryParam, Integer currentPage, Integer pageSize) {
+    public List<House> queryShould(Es es, QueryParamDTO queryParam, Integer currentPage, Integer pageSize) {
+        /*
+        keyword查询
+         */
         BoolQueryBuilder qb = QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchPhraseQuery("title", queryParam.getKeyword()))
                 .should(QueryBuilders.matchPhraseQuery("name", queryParam.getKeyword()))
@@ -112,7 +114,7 @@ public class QueryDaoImpl implements QueryDao {
         /*
         价格属性的查询
          */
-        String[] prices = queryParam.getPrice();
+        List<String> prices = queryParam.getPrice();
         BoolQueryBuilder priceQb = QueryBuilders.boolQuery();
         if (null != prices) {
             for (String price : prices) {
@@ -125,6 +127,18 @@ public class QueryDaoImpl implements QueryDao {
             }
         }
         qb.must(priceQb);
+        /*
+        其他属性查询
+         */
+        qb.must(EsUtils.fieldQuery("house_type", queryParam.getHouse_type()));
+        qb.must(EsUtils.fieldQuery("layout", queryParam.getLayout()));
+        qb.must(EsUtils.fieldQuery("floor", queryParam.getFloor()));
+        qb.must(EsUtils.fieldQuery("design", queryParam.getDesign()));
+        qb.must(EsUtils.fieldQuery("decorate", queryParam.getDecorate()));
+        qb.must(EsUtils.fieldQuery("lift_proportion", queryParam.getLift_proportion()));
+        qb.must(EsUtils.fieldQuery("region", queryParam.getRegion()));
+        qb.must(EsUtils.fieldQuery("community", queryParam.getCommunity()));
+
         SearchResponse response = client.prepareSearch(es.getIndex()).setTypes(es.getType())
                 .setQuery(qb)
                 .setFrom((currentPage - 1) * pageSize)

@@ -25,7 +25,7 @@
                 <h4 class="media-heading"></h4>
                 <span th:text="${house.title}"></span><br>
                 类型 :<span th:text="${house.houseType}"></span><br>
-                位置:<span th:text="${house.position}"></span><br>
+                位置:<span th:text="${house.positions}"></span><br>
                 longitude:<span th:text="${house.longitude}"></span><br>
                 latitude:<span th:text="${house.latitude}"></span><br>
                 布局:<span th:text="${house.layout}"></span><br>
@@ -38,7 +38,7 @@
                 均价:<span th:text="${house.avgPrice}"></span><br>
                 总价:<span th:text="${house.totalPrice}"></span>万<br>
                 地区:<span th:text="${house.region}"></span><br>
-                local:<span th:text="${house.local}"></span><br>
+                local:<span th:text="${house.locals}"></span><br>
                 社区:<span th:text="${house.community}"></span><br>
                 <span th:text="${#dates.format(house.updateTime,'yyyy/MM/dd HH:mm')}"></span><br>
             </div>

@@ -1,6 +1,6 @@
 package com.ustc.charles.dao;
 
-import com.ustc.charles.dto.QueryParam;
+import com.ustc.charles.dto.QueryParamDTO;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
 
@@ -83,7 +83,7 @@ public interface QueryDao {
      * @param pageSize pageSize
      * @return List<House>
      */
-    List<House> queryShould(Es es, QueryParam queryParam, Integer currentPage, Integer pageSize);
+    List<House> queryShould(Es es, QueryParamDTO queryParam, Integer currentPage, Integer pageSize);
 
     /**
      * 排序查询,依据得分降序排列

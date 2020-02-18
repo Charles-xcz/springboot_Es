@@ -29,6 +29,12 @@
                     <input type="checkbox" name="price" value="150-200" id="p6"/><label for="p6">150-200万</label>
                     <input type="checkbox" name="price" value="200-0" id="p7"/><label for="p7">200万以上</label>
                 </div>
+                <div th:each="fieldAttribute:${fieldAttributes}">
+                    <span th:text="${fieldAttribute.name}"></span>
+                    <label th:each="value:${fieldAttribute.values}">
+                        <input type="checkbox" th:name="${fieldAttribute.field}" th:value="${value}" th:text="${value}"/>
+                    </label>
+                </div>
             </form>
             <hr>
             <a th:href="@{/index/1/20/default}">

@@ -2,8 +2,9 @@ package com.ustc.charles.controller;
 
 import com.ustc.charles.dao.HouseDao;
 import com.ustc.charles.dao.QueryDao;
+import com.ustc.charles.dto.FieldAttributeDTO;
 import com.ustc.charles.dto.PaginationDTO;
-import com.ustc.charles.dto.QueryParam;
+import com.ustc.charles.dto.QueryParamDTO;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author charles
@@ -47,6 +44,11 @@ public class TestController {
                                      @PathVariable("size") Integer size,
                                      @PathVariable("field") String field,
                                      Model model) {
+        /*
+        将属性聚合,返回前端作为筛选条件
+         */
+        List<FieldAttributeDTO> fieldAttributes = houseDao.getFieldAttribute(es);
+        model.addAttribute("fieldAttributes", fieldAttributes);
         List<House> houses;
         if ("default".equals(field)) {
             houses = queryDao.indexSplitPage(es, current, size);
@@ -88,7 +90,7 @@ public class TestController {
     @RequestMapping("/query/{current}/{size}")
     public String boolQuery(@PathVariable("current") Integer current,
                             @PathVariable("size") Integer size,
-                            QueryParam queryParam, Model model) {
+                            QueryParamDTO queryParam, Model model) {
         List<House> houses = queryDao.queryShould(es, queryParam, current, size);
         PaginationDTO paginationDTO = new PaginationDTO();
         int totalPage = (int) (houseDao.getCount(es) / size);

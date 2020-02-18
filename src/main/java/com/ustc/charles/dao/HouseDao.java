@@ -1,7 +1,10 @@
 package com.ustc.charles.dao;
 
+import com.ustc.charles.dto.FieldAttributeDTO;
 import com.ustc.charles.model.Es;
 import com.ustc.charles.model.House;
+
+import java.util.List;
 
 /**
  * @author charles
@@ -42,4 +45,11 @@ public interface HouseDao {
      * @return 数量
      */
     Long getCount(Es es);
+
+    /**
+     * 获取字段属性
+     * @param es es
+     * @return List<FieldAttribute>
+     */
+    List<FieldAttributeDTO> getFieldAttribute(Es es);
 }

@@ -20,7 +20,7 @@ public class House {
     private String title;
     @JSONField(name = "house_type")
     private String houseType;
-    private String position;
+    private String positions;
     private String longitude;
     private String latitude;
     private String layout;
@@ -36,7 +36,7 @@ public class House {
     @JSONField(name = "avg_price")
     private Double avgPrice;
     private String region;
-    private String local;
+    private String locals;
     private String community;
     @JSONField(name = "create_time")
     private Date createTime;
