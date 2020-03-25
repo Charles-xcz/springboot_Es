@@ -1,6 +1,7 @@
 package com.ustc.charles.util;
 
 import com.ustc.charles.dto.FieldAttributeDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -27,9 +28,15 @@ public class EsUtils {
         StringTerms houseTypeTerms = (StringTerms) asMap.get(field + "Agg");
         List<StringTerms.Bucket> buckets = houseTypeTerms.getBuckets();
         List<String> list = new ArrayList<>();
+        int count=0;
         for (StringTerms.Bucket bucket : buckets) {
-            if (!bucket.getKeyAsString().isEmpty()) {
-                list.add(bucket.getKeyAsString());
+            String asString = bucket.getKeyAsString();
+            if (!StringUtils.isBlank(asString)&&!asString.equals("暂无数据")) {
+                list.add(asString);
+                count++;
+            }
+            if (count>=8){
+                break;
             }
         }
         fieldAttribute.setValues(list);

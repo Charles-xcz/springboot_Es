@@ -14,7 +14,7 @@ import java.util.List;
  * @author charles
  * @date 2020/1/21 13:48
  */
-public class HitsToBeanUtil {
+public class HitsToHousesUtil {
     public static List<House> hitsToBeans(SearchHits hits) {
         List<House> houses = new ArrayList<>();
         for (SearchHit hit : hits) {

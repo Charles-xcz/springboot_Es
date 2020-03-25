@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>House</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -29,12 +29,32 @@
                     <input type="checkbox" name="price" value="150-200" id="p6"/><label for="p6">150-200万</label>
                     <input type="checkbox" name="price" value="200-0" id="p7"/><label for="p7">200万以上</label>
                 </div>
+                <div th:each="fieldAttribute:${fieldAttributes}">
+                    <span th:text="${fieldAttribute.name}"></span>
+                    <label th:each="value:${fieldAttribute.values}">
+                        <input type="checkbox" th:name="${fieldAttribute.field}" th:value="${value}"
+                               th:text="${value}"/>
+                    </label>
+                </div>
             </form>
+            <hr>
+            <a th:href="@{/index/1/20/default}">
+                <span>默认排序</span>
+            </a>
+            <a th:href="@{/index/1/20/avg_price}">
+                <span>按均价排序</span>
+            </a>
+            <a th:href="@{/index/1/20/total_price}">
+                <span>按总价排序</span>
+            </a>
+            <a th:href="@{/index/1/20/update_time}">
+                <span>按发布时间排序</span>
+            </a>
             <hr>
             <div class="media" th:each="house:${houses}">
                 <div class="media-body">
                     <h4 class="media-heading"></h4>
-                    <a th:href="@{'/house/detail/'+${house.id}}"><span th:utext="${house.title}"></span></a><br>
+                    <a th:href="@{'/house/detail/'+${house.id}}"><span th:text="${house.title}"></span></a><br>
                     <span class=" text-desc">
                         均价:<span th:text="${house.avgPrice}"></span>
                         总价:<span th:text="${house.totalPrice}"></span>万
@@ -49,27 +69,25 @@
             <nav aria-label="Page navigation">
                 <ul class="pagination">
                     <li th:if="${pagination.showFirstPage}">
-                        <a th:href="@{'/query/1/20?keyword='+${keyword}}" aria-label="Previous">
+                        <a th:href="@{'/index/1/20/'+${field}}" aria-label="Previous">
                             <span aria-hidden="true">&lt;&lt;</span>
                         </a>
                     </li>
                     <li th:if="${pagination.showPrevious}">
-                        <a th:href="@{'/query/'+${pagination.currentPage-1}+'/20?keyword='+${keyword}}"
-                           aria-label="Previous">
+                        <a th:href="@{'/index/'+${pagination.currentPage-1}+'/20/'+${field}}" aria-label="Previous">
                             <span aria-hidden="true">&lt;</span>
                         </a>
                     </li>
                     <li th:each="page:${pagination.pages}" th:class="${pagination.currentPage==page}?'active':''">
-                        <a th:href="@{'/query/'+${page}+'/20?keyword='+${keyword}}" th:text="${page}"></a>
+                        <a th:href="@{'/index/'+${page}+'/20/'+${field}}" th:text="${page}"></a>
                     </li>
                     <li th:if="${pagination.showNextPage}">
-                        <a th:href="@{'/query/'+${pagination.currentPage+1}+'/20?keyword='+${keyword}}"
-                           aria-label="Next">
+                        <a th:href="@{'/index/'+${pagination.currentPage+1}+'/20/'++${field}}" aria-label="Next">
                             <span aria-hidden="true">&gt;</span>
                         </a>
                     </li>
                     <li th:if="${pagination.showEndPage}">
-                        <a th:href="@{'/query/'+${pagination.totalPage}+'/20?keyword='+${keyword}}" aria-label="Next">
+                        <a th:href="@{'/index/'+${pagination.totalPage}+'/20/'++${field}}" aria-label="Next">
                             <span aria-hidden="true">&gt;&gt;</span>
                         </a>
                     </li>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ustc.charles.dao.HouseMapper">
+
+    <sql id="selectFields">
+        id, title, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
+    </sql>
+
+    <!--    <sql id="insertFields">-->
+    <!--        user_id, entity_type, entity_id, target_id, content, status, create_time-->
+    <!--    </sql>-->
+    <select id="selectHouses" resultType="com.ustc.charles.model.House">
+        select
+        <include refid="selectFields"/>
+        from ershoufang_lianjia
+        <if test="offset!=null">
+            <if test="limit!=null">
+                limit #{offset}, #{limit}
+            </if>
+        </if>
+    </select>
+
+
+</mapper>

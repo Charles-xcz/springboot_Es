@@ -16,14 +16,15 @@ public class QueryParamDTO implements Serializable {
     private String keyword;
     private List<String> locals;
     private List<String> price;
-    private List<String> house_type;
+    private List<String> houseType;
     private Double[] area;
     private List<String> layout;
     private List<String> floor;
     private List<String> design;
     private List<String> decorate;
     private List<String> lift;
-    private List<String> lift_proportion;
+    private List<String> liftProportion;
     private List<String> region;
     private List<String> community;
+    private String sortField;
 }

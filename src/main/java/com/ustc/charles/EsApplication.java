@@ -1,25 +1,18 @@
 package com.ustc.charles;
 
-import com.ustc.charles.config.ElasticSearchConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import java.util.List;
 
 /**
  * @author charles
  */
+@Slf4j
 @SpringBootApplication
 public class EsApplication {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticSearchConfig.class);
-
     public static void main(String[] args) {
         SpringApplication.run(EsApplication.class, args);
-        logger.info(" application running...");
+        log.info(" application running...");
     }
 }

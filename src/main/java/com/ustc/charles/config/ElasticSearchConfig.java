@@ -1,7 +1,6 @@
 package com.ustc.charles.config;
 
 
-import com.ustc.charles.model.Es;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -16,7 +15,6 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.net.InetAddress;
@@ -26,7 +24,7 @@ import java.net.UnknownHostException;
 /**
  * @author charles
  */
-@Configuration
+//@Configuration
 public class ElasticSearchConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchConfig.class);
@@ -43,15 +41,10 @@ public class ElasticSearchConfig {
     private String type;
     private TransportClient transportClient;
 
-    @Bean
-    public Es es() {
-        return new Es(index, type);
-    }
-
     /**
      * ES TransportClient 配置
      */
-    @Bean
+//    @Bean
     public TransportClient transportClient() {
         Settings settings = Settings.EMPTY;
         if (clusterName != null && clusterName.length() != 0) {
@@ -73,7 +66,7 @@ public class ElasticSearchConfig {
     /**
      * 批操作配置
      */
-    @Bean
+//    @Bean
     public BulkProcessor bulkProcessor() throws UnknownHostException {
         Settings settings = Settings.EMPTY;
         if (clusterName != null && clusterName.length() != 0) {
@@ -91,7 +84,6 @@ public class ElasticSearchConfig {
 
             @Override
             public void afterBulk(long l, BulkRequest bulkRequest, BulkResponse bulkResponse) {
-
             }
 
             @Override

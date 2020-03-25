@@ -1,14 +1,48 @@
 #Es配置信息
 elasticsearch:
-  host: localhost
-  port: 9300
-  cluster-name: charles
-  index: house
-  type: lianjia
+  #  host: localhost
+  #  port: 9300
+  #  cluster-name: charles
+  index: es_house
+  type: _doc
 
 #服务器端口
 server:
+  servlet:
+    context-path: /house
   port: 80
+
 spring:
-  mvc:
-    static-path-pattern: /static/**
+  thymeleaf:
+    cache: false
+
+  profiles:
+    active: dev
+  # 需要更新的目录
+  devtools:
+    restart:
+      additional-paths: resources/**,static/**,templates/**
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/es?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=Hongkong
+    username: root
+    password: 123456
+    platform: mysql
+    # springboot默认的连接池为HikariCP,此处替换为Druid
+    type: com.zaxxer.hikari.HikariDataSource
+    #初始化大小，最小，最大
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000
+  data:
+    elasticsearch:
+      cluster-name: charles
+      cluster-nodes: localhost:9300
+# MybatisProperties
+mybatis:
+  type-aliases-package: com.ustc.charles.model
+  mapper-locations: classpath:/mybatis-mappers/*
+  configuration:
+    map-underscore-to-camel-case: true
+    use-generated-keys: true

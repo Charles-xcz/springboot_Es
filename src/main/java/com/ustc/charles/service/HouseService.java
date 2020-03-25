@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service;
  * @date 2020/1/21 12:10
  */
 @Service
-public interface HouseService {
+public class HouseService {
 
 }
