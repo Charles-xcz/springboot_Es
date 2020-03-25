@@ -79,7 +79,8 @@ public interface QueryDao {
      * @param pageSize    pageSize
      * @return List<House>
      */
-    Map<String, Object> searchHouse(QueryParamDTO queryParam, Integer currentPage, Integer pageSize);
+    Map<String, Object> searchHouse(QueryParamDTO queryParam, String orderMode, Integer currentPage, Integer pageSize);
+
 
     /**
      * 排序查询,依据得分降序排列

@@ -136,23 +136,43 @@
             </div>
             <div class="position-relative">
                 <!-- 筛选条件 -->
-                <ul class="nav nav-tabs mb-3">
+                <ul class="nav nav-tabs mb-3" th:fragment="orderMode">
                     <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('default')?'active':''}|"
-                           th:href="@{/index(orderMode='default')}">默认</a>
+                        <button type="button" name="orderMode"
+                                th:class="|nav-link btn-order ${orderMode.equals('default')?'btn-info':''}|"
+                                value="default">默认
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('avgPrice')?'active':''}|"
-                           th:href="@{/index(orderMode='avgPrice')}">均价排序</a>
+                        <button type="button" name="orderMode"
+                                th:class="|nav-link btn-order ${orderMode.equals('avgPrice')?'btn-info':''}|"
+                                value="avgPrice">均价排序
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('totalPrice')?'active':''}|"
-                           th:href="@{/index(orderMode='totalPrice')}">总价排序</a>
+                        <button type="button" name="orderMode"
+                                th:class="|nav-link btn-order ${orderMode.equals('totalPrice')?'btn-info':''}|"
+                                value="totalPrice">总价排序
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('createTime')?'active':''}|"
-                           th:href="@{/index(orderMode='createTime')}">时间</a>
+                        <button type="button" name="orderMode"
+                                th:class="|nav-link btn-order ${orderMode.equals('createTime')?'btn-info':''}|"
+                                value="createTime">时间排序
+                        </button>
                     </li>
+<!--                    <li class="nav-item">-->
+<!--                        <a th:class="|nav-link ${orderMode.equals('avgPrice')?'active':''}|"-->
+<!--                           th:href="@{/index(orderMode='avgPrice')}">均价排序</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item">-->
+<!--                        <a th:class="|nav-link ${orderMode.equals('totalPrice')?'active':''}|"-->
+<!--                           th:href="@{/index(orderMode='totalPrice')}">总价排序</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item">-->
+<!--                        <a th:class="|nav-link ${orderMode.equals('createTime')?'active':''}|"-->
+<!--                           th:href="@{/index(orderMode='createTime')}">时间</a>-->
+<!--                    </li>-->
                 </ul>
             </div>
 

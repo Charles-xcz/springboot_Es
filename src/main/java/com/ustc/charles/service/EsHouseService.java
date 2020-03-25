@@ -34,8 +34,8 @@ public class EsHouseService {
         return queryDao.listByPage(current, limit, sortField);
     }
 
-    public Map<String, Object> searchHouse(QueryParamDTO queryParam, int offset, int limit) {
-        return queryDao.searchHouse(queryParam, offset, limit);
+    public Map<String, Object> searchHouse(QueryParamDTO queryParam, String orderMode, int offset, int limit) {
+        return queryDao.searchHouse(queryParam, orderMode, offset, limit);
     }
 
     public List<FieldAttributeDTO> getFieldAttributes() {

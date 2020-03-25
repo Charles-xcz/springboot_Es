@@ -58,7 +58,7 @@ public class HouseController {
         List<FieldAttributeDTO> fieldAttributes = queryDao.getFieldAttribute();
         model.addAttribute("fieldAttributes", fieldAttributes);
 
-        Map<String, Object> map = esHouseService.searchHouse(queryParamDTO, page.getOffset(), page.getLimit());
+        Map<String, Object> map = esHouseService.searchHouse(queryParamDTO,orderMode, page.getOffset(), page.getLimit());
         List<House> houses = (List<House>) map.get("houses");
         long totalHits = (long) map.get("totalHits");
         page.setLimit(10);

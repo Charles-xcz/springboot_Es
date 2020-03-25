@@ -26,5 +26,4 @@ public class QueryParamDTO implements Serializable {
     private List<String> liftProportion;
     private List<String> region;
     private List<String> community;
-    private String sortField;
 }

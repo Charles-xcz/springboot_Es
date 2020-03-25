@@ -135,7 +135,7 @@ public class QueryDaoImpl implements QueryDao {
     }
 
     @Override
-    public Map<String, Object> searchHouse(QueryParamDTO queryParam, Integer offset, Integer limit) {
+    public Map<String, Object> searchHouse(QueryParamDTO queryParam, String orderMode, Integer offset, Integer limit) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
         /*
         价格条件
@@ -175,10 +175,10 @@ public class QueryDaoImpl implements QueryDao {
         }
 
         SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setQuery(qb);
-        if (queryParam.getSortField() == null || EsHouseConstant.SORT_DEFAULT.equals(queryParam.getSortField())) {
+        if (StringUtils.isBlank(orderMode) || EsHouseConstant.SORT_DEFAULT.equals(orderMode)) {
             requestBuilder.addSort(SortBuilders.scoreSort());
         } else {
-            requestBuilder.addSort(SortBuilders.fieldSort(queryParam.getSortField()));
+            requestBuilder.addSort(SortBuilders.fieldSort(orderMode));
         }
 
         HighlightBuilder highlightBuilder = new HighlightBuilder();

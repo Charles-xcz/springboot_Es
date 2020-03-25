@@ -78,17 +78,17 @@ public class TestController {
         return queryDao.queryByPriceRange(low, high);
     }
 
-    @RequestMapping("/query/{current}/{size}")
-    public String boolQuery(@PathVariable("current") Integer current,
-                            @PathVariable("size") Integer size,
-                            QueryParamDTO queryParam, Model model) {
-        List<House> houses = (List<House>) queryDao.searchHouse(queryParam, current, size).get("houses");
-        PaginationDTO paginationDTO = new PaginationDTO();
-        int totalPage = (int) (houseDao.getCount() / size);
-        paginationDTO.setPagination(totalPage, current, size);
-        model.addAttribute("houses", houses);
-        model.addAttribute("pagination", paginationDTO);
-        model.addAttribute("keyword", queryParam.getKeyword());
-        return "search";
-    }
+//    @RequestMapping("/query/{current}/{size}")
+//    public String boolQuery(@PathVariable("current") Integer current,
+//                            @PathVariable("size") Integer size,
+//                            QueryParamDTO queryParam, Model model) {
+//        List<House> houses = (List<House>) queryDao.searchHouse(queryParam,orderMode current, size).get("houses");
+//        PaginationDTO paginationDTO = new PaginationDTO();
+//        int totalPage = (int) (houseDao.getCount() / size);
+//        paginationDTO.setPagination(totalPage, current, size);
+//        model.addAttribute("houses", houses);
+//        model.addAttribute("pagination", paginationDTO);
+//        model.addAttribute("keyword", queryParam.getKeyword());
+//        return "search";
+//    }
 }

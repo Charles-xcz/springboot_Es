@@ -14,8 +14,8 @@
 <body>
 <div class="nk-container">
     <!--    头部-->
-<!--    <header class="bg-dark sticky-top" th:replace="index::header">-->
-<!--    </header>-->
+    <!--    <header class="bg-dark sticky-top" th:replace="index::header">-->
+    <!--    </header>-->
 
     <!-- 内容 -->
     <div class="main">
@@ -27,10 +27,12 @@
             <br>
             <div class="position-relative">
                 <!-- 筛选条件 -->
-                <ul class="nav nav-tabs mb-3">
+                <ul class="nav nav-tabs mb-3" th:replace="index::orderMode">
                     <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('default')?'active':''}|"
-                           th:href="@{/index(orderMode='default')}">默认</a>
+                        <button type="button" name="orderMode"
+                                th:class="|nav-link btn-s ${orderMode.equals('default')?'active':''}|"
+                                value="default">默认
+                        </button>
                     </li>
                     <li class="nav-item">
                         <a th:class="|nav-link ${orderMode.equals('avgPrice')?'active':''}|"
@@ -75,25 +77,7 @@
                 </li>
             </ul>
             <!-- 分页 -->
-            <nav class="mt-5" th:if="${page.rows>0}" th:fragment="pagination">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
-                    </li>
-                    <li th:class="|page-item ${page.current==1?'disabled':''}|">
-                        <a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a>
-                    </li>
-                    <li th:each="i:${#numbers.sequence(page.from,page.to)}"
-                        th:class="|page-item ${i==page.current?'active':''}|">
-                        <a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}"></a>
-                    </li>
-                    <li th:class="|page-item ${page.current==page.total?'disabled':''}|">
-                        <a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>
-                    </li>
-                </ul>
+            <nav class="mt-5" th:if="${page.rows>0}" th:replace="index::pagination">
             </nav>
         </div>
     </div>
