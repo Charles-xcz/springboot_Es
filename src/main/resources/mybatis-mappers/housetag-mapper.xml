@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ustc.charles.dao.mapper.HouseTagMapper">
+
+    <insert id="save" keyProperty="id">
+        insert into house_tag (house_id, name)
+        VALUES (
+        <foreach collection="list" item="houseTag" separator=",">
+            #{houseId},#{name}
+        </foreach>
+        )
+    </insert>
+    <delete id="deleteTag">
+        delete
+        from house_tag
+        where id = #{id}
+    </delete>
+    <select id="selectTagsByHouseId" resultType="com.ustc.charles.model.HouseTag">
+        select house_id, id, name
+        from house_tag
+        where house_id = #{houseId}
+    </select>
+    <select id="findByNameAndHouseId" resultType="com.ustc.charles.model.HouseTag">
+        select house_id, id, name
+        from house_tag
+        where name = #{tagName}
+          and house_id = #{houseId}
+    </select>
+</mapper>

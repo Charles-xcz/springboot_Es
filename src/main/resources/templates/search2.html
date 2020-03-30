@@ -6,76 +6,58 @@
     <!--    <meta name="_csrf" th:content="${_csrf.token}">-->
     <!--    <meta name="_csrf_header" th:content="${_csrf.headerName}">-->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          crossorigin="anonymous">
+    <!--        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
+    <!--              crossorigin="anonymous">-->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/global.css}"/>
+    <link th:href="@{/css/main.css}" rel='stylesheet' type='text/css'/>
+    <link th:href="@{/css/list.css}" rel='stylesheet' type='text/css'/>
+    <link th:href="@{/lib/layui/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/lib/jquery-ui-1.12.1/jquery-ui.min.css}" rel="stylesheet" type="text/css"/>
     <title>HouseSearch-首页</title>
 </head>
 <body>
 <div class="nk-container">
-    <!--    头部-->
-    <!--    <header class="bg-dark sticky-top" th:replace="index::header">-->
-    <!--    </header>-->
-
+    <!--头部-->
+    <header class="bg-dark sticky-top" th:replace="index::header">
+    </header>
     <!-- 内容 -->
     <div class="main">
         <div class="container">
-            <div th:replace="index::filter">
-            </div>
-
-            <br>
-            <br>
-            <div class="position-relative">
-                <!-- 筛选条件 -->
-                <ul class="nav nav-tabs mb-3" th:replace="index::orderMode">
-                    <li class="nav-item">
-                        <button type="button" name="orderMode"
-                                th:class="|nav-link btn-s ${orderMode.equals('default')?'active':''}|"
-                                value="default">默认
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('avgPrice')?'active':''}|"
-                           th:href="@{/index(orderMode='avgPrice')}">均价排序</a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('totalPrice')?'active':''}|"
-                           th:href="@{/index(orderMode='totalPrice')}">总价排序</a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:class="|nav-link ${orderMode.equals('createTime')?'active':''}|"
-                           th:href="@{/index(orderMode='createTime')}">时间</a>
-                    </li>
-                </ul>
-            </div>
+            <div th:replace="index::filter"></div>
+            <!--            <div class="bg-gray" th:replace="index::filter">-->
+            <!--            </div>-->
+            <!--            <div class="position-relative" th:replace="index::orderMode">-->
+            <!--            </div>-->
             <!-- 帖子列表 -->
-            <ul class="list-unstyled">
-                <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="house:${houses}">
-                    <a href="#">
-                        <!--                        <img th:src="${postDto.user.headerUrl}" class="mr-4 rounded-circle" alt="用户头像"-->
-                        <!--                             style="width:50px;height:50px;">-->
-                    </a>
-                    <div class="media-body">
-                        <h6 class="mt-0 mb-3">
-                            <a th:href="@{|/house/detail/${house.id}|}" th:utext="${house.title}"></a>
-                            <!--                            <span class="badge badge-secondary bg-primary"-->
-                            <!--                                  th:if="${postDto.discussPost.type==1}">置顶</span>-->
-                            <!--                            <span class="badge badge-secondary bg-danger"-->
-                            <!--                                  th:if="${postDto.discussPost.status==1}">精华</span>-->
-                        </h6>
-                        <div class="text-muted font-size-12">
-                            <u class="mr-3" th:utext="${house.houseType}"></u> 发布于 <b
-                                th:text="${#dates.format(house.createTime,'yyyy-MM-dd HH:mm:ss')}"></b>
-                            <ul class="d-inline float-right">
-                                <li class="d-inline ml-2">均价 <i th:text="${house.avgPrice}">11</i></li>
-                                <li class="d-inline ml-2">|</li>
-                                <li class="d-inline ml-2">总价 <span th:text="${house.totalPrice}"></span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+            <div th:replace="index::list"></div>
+<!--            <ul class="list-unstyled">-->
+<!--                <li class="media pb-3 pt-3 mb-3 border-bottom" th:each="house:${houses}">-->
+<!--                    <a href="#">-->
+<!--                        &lt;!&ndash;                        <img th:src="${postDto.user.headerUrl}" class="mr-4 rounded-circle" alt="用户头像"&ndash;&gt;-->
+<!--                        &lt;!&ndash;                             style="width:50px;height:50px;">&ndash;&gt;-->
+<!--                    </a>-->
+<!--                    <div class="media-body">-->
+<!--                        <h6 class="mt-0 mb-3">-->
+<!--                            <a th:href="@{|/house/detail/${house.id}|}" th:utext="${house.title}"></a>-->
+<!--                            &lt;!&ndash;                            <span class="badge badge-secondary bg-primary"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                  th:if="${postDto.discussPost.type==1}">置顶</span>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            <span class="badge badge-secondary bg-danger"&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                  th:if="${postDto.discussPost.status==1}">精华</span>&ndash;&gt;-->
+<!--                        </h6>-->
+<!--                        <div class="text-muted font-size-12">-->
+<!--                            <u class="mr-3" th:utext="${house.houseType}"></u> 发布于 <b-->
+<!--                                th:text="${#dates.format(house.createTime,'yyyy-MM-dd HH:mm:ss')}"></b>-->
+<!--                            <ul class="d-inline float-right">-->
+<!--                                <li class="d-inline ml-2">均价 <i th:text="${house.avgPrice}">11</i></li>-->
+<!--                                <li class="d-inline ml-2">|</li>-->
+<!--                                <li class="d-inline ml-2">总价 <span th:text="${house.totalPrice}"></span>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--            </ul>-->
             <!-- 分页 -->
             <nav class="mt-5" th:if="${page.rows>0}" th:replace="index::pagination">
             </nav>

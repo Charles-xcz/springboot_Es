@@ -65,6 +65,32 @@ footer .company-info li {
     padding-bottom: 200px;
 }
 
+.filter .btn-0 {
+    padding: 5px;
+    background-color: white;
+}
+
+.filter .btn-1 {
+    padding: 5px;
+    color: whitesmoke;
+    background-color: #00b7ee;
+}
+
+.filter .btn-order0 {
+    padding: 5px;
+    width: 90px;
+    height: 35px;
+}
+
+.filter .btn-order1 {
+    padding: 5px;
+    color: whitesmoke;
+    background-color: cornflowerblue;
+    width: 90px;
+    height: 35px;
+}
+
+
 .main .container {
     background: #fff;
     padding: 20px;

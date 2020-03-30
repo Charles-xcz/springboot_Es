@@ -1,6 +1,7 @@
+var PATH = '/house/search';
 $(function () {
     $(".btn-s").click(hreurl);
-    $(".btn-sub").click(submit);
+    $(".btn-sub").click(submit0);
     $(".btn-order").click(orderBtn);
 });
 
@@ -33,10 +34,10 @@ function hreurl() {
     }
     param = replaceFragment(param, "current=", "current=1");
     param = encodeURI(param);
-    window.location.href = '/house/search' + param;
+    window.location.href = PATH + param;
 }
 
-function submit() {
+function submit0() {
     var search = window.location.search;
     search = decodeURI(search);
     var param = $("#keyword").attr("name") + '=' + $("#keyword").val();
@@ -48,7 +49,7 @@ function submit() {
         param = replaceFragment(param, "current=", "current=1");
     }
     param = encodeURI(param);
-    location.href = '/house/search' + param;
+    location.href = PATH + param;
 }
 
 function orderBtn() {
@@ -63,7 +64,7 @@ function orderBtn() {
         param = replaceFragment(param, "current=", "current=1");
     }
     param = encodeURI(param);
-    location.href = '/house/search' + param;
+    location.href = PATH + param;
 }
 
 function replaceFragment(target, fragmentOut, fragmentIn) {

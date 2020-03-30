@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ustc.charles.dao.mapper.SupportAddressMapper">
+
+
+    <select id="findAllByLevel" resultType="com.ustc.charles.model.SupportAddress">
+        select id, belong_to, en_name, cn_name, level, baidu_map_lng, baidu_map_lat
+        from support_address
+        where level = #{level}
+    </select>
+    <select id="findByEnNameAndLevel" resultType="com.ustc.charles.model.SupportAddress">
+        select id, belong_to, en_name, cn_name, level, baidu_map_lng, baidu_map_lat
+        from support_address
+        where en_name = #{cityEnName}
+          and level = #{level}
+    </select>
+    <select id="findByEnNameAndBelongTo" resultType="com.ustc.charles.model.SupportAddress">
+        select id, belong_to, en_name, cn_name, level, baidu_map_lng, baidu_map_lat
+        from support_address
+        where en_name = #{regionEnName}
+          and belong_to = #{cityName}
+    </select>
+    <select id="findAllByLevelAndBelongTo" resultType="com.ustc.charles.model.SupportAddress">
+        select id, belong_to, en_name, cn_name, level, baidu_map_lng, baidu_map_lat
+        from support_address
+        where level = #{level}
+          and belong_to = #{cityName}
+    </select>
+</mapper>

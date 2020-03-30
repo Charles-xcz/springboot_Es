@@ -1,10 +1,10 @@
 package com.ustc.charles.controller;
 
-import com.ustc.charles.dao.QueryDao;
-import com.ustc.charles.dto.FieldAttributeDTO;
-import com.ustc.charles.dto.QueryParamDTO;
+import com.ustc.charles.dto.FieldAttributeDto;
+import com.ustc.charles.dto.QueryParamDto;
+import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.model.House;
-import com.ustc.charles.model.Page;
+import com.ustc.charles.dto.Page;
 import com.ustc.charles.service.EsHouseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,23 +25,69 @@ import java.util.Map;
  */
 @Controller
 @Slf4j
+@RequestMapping("house")
 public class HouseController {
-    @Autowired
-    private QueryDao queryDao;
+
     @Autowired
     private EsHouseService esHouseService;
 
+
     @GetMapping("/detail/{id}")
     public String getHouseDetail(@PathVariable("id") String id, Model model) {
-        House house = queryDao.getById(id);
+        House house = esHouseService.findById(id);
         model.addAttribute("house", house);
         return "site/house-detail";
     }
+//
+//    @GetMapping("/index")
+//    public String getIndex0Page(Model model, Page page,
+//                                @RequestParam(name = "orderMode", defaultValue = "default") String orderMode) {
+//        page.setLimit(10);
+//        page.setPath("/index?orderMode=" + orderMode);
+//        page.setRows((int) esHouseService.getCount());
+//        /*
+//        将属性聚合,返回前端作为筛选条件
+//         */
+//        List<FieldAttributeDto> fieldAttributes = esHouseService.getFieldAttributes();
+//        model.addAttribute("fieldAttributes", fieldAttributes);
+//
+//        List<House> houses = esHouseService.listByPage(page.getCurrent(), page.getLimit(), orderMode);
+//        String sb = "";
+//
+//        model.addAttribute("params", sb);
+//        model.addAttribute("houses", houses);
+//        model.addAttribute("page", page);
+//        model.addAttribute("orderMode", orderMode);
+//        return "index";
+//    }
+
 
     @GetMapping("/search")
-    public String searchHouse(QueryParamDTO queryParamDTO,
+    public String searchHouse(QueryParamDto queryParamDTO,
                               Page page, Model model, HttpServletRequest request,
                               @RequestParam(name = "orderMode", defaultValue = "default") String orderMode) {
+
+        String paramString = getParamString(request);
+
+        model.addAttribute("params", paramString);
+
+        page.setPath("/house/search?" + paramString);
+
+        ServiceMultiResult<FieldAttributeDto> fieldAttributes = esHouseService.getFieldAttributes("0");
+        model.addAttribute("fieldAttributes", fieldAttributes.getResult());
+
+        ServiceMultiResult<House> result = esHouseService.searchHouse(queryParamDTO, orderMode, page.getOffset(), page.getLimit());
+        page.setLimit(10);
+        page.setRows((int) result.getTotal());
+        model.addAttribute("houses", result.getResult());
+        model.addAttribute("totalHits", result.getTotal());
+        model.addAttribute("page", page);
+        model.addAttribute("orderMode", orderMode);
+        model.addAttribute("keyword", queryParamDTO.getKeyword());
+        return "search2";
+    }
+
+    private String getParamString(HttpServletRequest request) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         StringBuilder sb = new StringBuilder();
         for (String key : parameterMap.keySet()) {
@@ -51,24 +98,10 @@ public class HouseController {
                 }
             }
         }
-
-        model.addAttribute("params", sb.toString());
-        page.setPath("/search?" + sb.toString());
-
-        List<FieldAttributeDTO> fieldAttributes = queryDao.getFieldAttribute();
-        model.addAttribute("fieldAttributes", fieldAttributes);
-
-        Map<String, Object> map = esHouseService.searchHouse(queryParamDTO,orderMode, page.getOffset(), page.getLimit());
-        List<House> houses = (List<House>) map.get("houses");
-        long totalHits = (long) map.get("totalHits");
-        page.setLimit(10);
-        page.setRows((int) totalHits);
-        model.addAttribute("houses", houses);
-        model.addAttribute("totalHits", totalHits);
-        model.addAttribute("page", page);
-        model.addAttribute("orderMode", orderMode);
-        model.addAttribute("keyword", queryParamDTO.getKeyword());
-        return "search2";
+        String s = sb.toString();
+        if (s.endsWith("&")) {
+            s = s.substring(0, s.length() - 1);
+        }
+        return s;
     }
-
 }

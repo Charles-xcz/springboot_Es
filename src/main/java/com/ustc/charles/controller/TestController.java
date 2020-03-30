@@ -1,94 +1,117 @@
 package com.ustc.charles.controller;
 
-import com.ustc.charles.dao.HouseDao;
-import com.ustc.charles.dao.QueryDao;
-import com.ustc.charles.dto.FieldAttributeDTO;
-import com.ustc.charles.dto.PaginationDTO;
-import com.ustc.charles.dto.QueryParamDTO;
-import com.ustc.charles.model.House;
+import com.ustc.charles.dto.HouseDto;
+import com.ustc.charles.entity.RentSearch;
+import com.ustc.charles.entity.RentValueBlock;
+import com.ustc.charles.entity.ServiceMultiResult;
+import com.ustc.charles.entity.ServiceResult;
+import com.ustc.charles.model.SupportAddress;
+import com.ustc.charles.model.User;
+import com.ustc.charles.service.AddressService;
+import com.ustc.charles.service.HouseService;
+import com.ustc.charles.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * @author charles
- * @date 2020/1/20 13:37
+ * @date 2020/3/28 21:00
  */
 @Controller
 public class TestController {
     @Autowired
-    private HouseDao houseDao;
+    private AddressService addressService;
     @Autowired
-    private QueryDao queryDao;
+    private HouseService houseService;
+    @Autowired
+    private UserService userService;
 
-    @RequestMapping("/count")
-    public Long count() {
-        return houseDao.getCount();
-    }
-
-    @RequestMapping("/index/{current}/{size}/{field}")
-    public String indexSortedByField(@PathVariable("current") Integer current,
-                                     @PathVariable("size") Integer size,
-                                     @PathVariable("field") String field,
-                                     Model model) {
-        /*
-        将属性聚合,返回前端作为筛选条件
-         */
-        List<FieldAttributeDTO> fieldAttributes = queryDao.getFieldAttribute();
-        model.addAttribute("fieldAttributes", fieldAttributes);
-        List<House> houses;
-        if ("default".equals(field)) {
-            houses = queryDao.listByPage(current, size);
+    @GetMapping("/rent/house")
+    public String rentHousePage(@ModelAttribute RentSearch rentSearch,
+                                Model model, HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        if (rentSearch.getCityEnName() == null) {
+            String cityEnNameInSession = (String) session.getAttribute("cityEnName");
+            if (cityEnNameInSession == null) {
+                redirectAttributes.addAttribute("msg", "must_chose_city");
+                return "redirect:/index";
+            } else {
+                rentSearch.setCityEnName(cityEnNameInSession);
+            }
         } else {
-            houses = queryDao.listByPage(current, size, field);
+            session.setAttribute("cityEnName", rentSearch.getCityEnName());
         }
-        PaginationDTO paginationDTO = new PaginationDTO();
-        int totalPage = (int) (houseDao.getCount() / size);
-        paginationDTO.setPagination(totalPage, current, size);
-        model.addAttribute("houses", houses);
-        model.addAttribute("pagination", paginationDTO);
-        model.addAttribute("field", field);
-        return "index2";
+
+        ServiceResult<SupportAddress> city = addressService.findCity(rentSearch.getCityEnName());
+        if (!city.isSuccess()) {
+            redirectAttributes.addAttribute("msg", "must_chose_city");
+            return "redirect:/index";
+        }
+        model.addAttribute("currentCity", city.getResult());
+
+        ServiceMultiResult<SupportAddress> addressResult = addressService.findAllRegionsByCityName(rentSearch.getCityEnName());
+        if (addressResult.getResult() == null || addressResult.getTotal() < 1) {
+            redirectAttributes.addAttribute("msg", "must_chose_city");
+            return "redirect:/index";
+        }
+
+        ServiceMultiResult<HouseDto> serviceMultiResult = houseService.query(rentSearch);
+        model.addAttribute("total", serviceMultiResult.getTotal());
+        model.addAttribute("houses", serviceMultiResult.getResult());
+
+        if (rentSearch.getRegionEnName() == null) {
+            rentSearch.setRegionEnName("*");
+        }
+
+        model.addAttribute("searchBody", rentSearch);
+        model.addAttribute("regions", addressResult.getResult());
+
+        model.addAttribute("priceBlocks", RentValueBlock.PRICE_BLOCK);
+        model.addAttribute("areaBlocks", RentValueBlock.AREA_BLOCK);
+
+        model.addAttribute("currentPriceBlock", RentValueBlock.matchPrice(rentSearch.getPriceBlock()));
+        model.addAttribute("currentAreaBlock", RentValueBlock.matchArea(rentSearch.getAreaBlock()));
+
+        return "reference/rent-list";
     }
 
-    @RequestMapping("/house/detail/{id}")
-    public String detail(@PathVariable("id") String id, Model model) {
-        List<House> houses = queryDao.queryById(id);
-        House house = houses.get(0);
-        model.addAttribute("house", house);
-        return "detail";
+    @GetMapping("/show/{id}")
+    public String show(@PathVariable(value = "id") Long houseId,
+                       Model model) {
+        if (houseId <= 0) {
+            return "404";
+        }
+        ServiceResult<HouseDto> serviceResult = houseService.findCompleteById(houseId);
+        if (!serviceResult.isSuccess()) {
+            return "404";
+        }
+
+        HouseDto houseDTO = serviceResult.getResult();
+        Map<SupportAddress.Level, SupportAddress>
+                addressMap = addressService.findCityAndRegion(houseDTO.getCityEnName(), houseDTO.getRegionEnName());
+
+        SupportAddress city = addressMap.get(SupportAddress.Level.CITY);
+        SupportAddress region = addressMap.get(SupportAddress.Level.REGION);
+
+        model.addAttribute("city", city);
+        model.addAttribute("region", region);
+
+        ServiceResult<User> userServiceResult = userService.findUserById(2);
+        model.addAttribute("agent", userServiceResult.getResult());
+        model.addAttribute("house", houseDTO);
+
+//        ServiceResult<Long> aggResult = searchService.aggregateDistrictHouse(city.getEnName(), region.getEnName(), houseDTO.getDistrict());
+        model.addAttribute("houseCountInDistrict", 20);
+
+        return "reference/house-detail";
     }
 
-    @RequestMapping("/delete/{id}")
-    public String delete(@PathVariable("id") String id) {
-        return houseDao.deleteById(id);
-    }
-
-    @RequestMapping("/search/{name}")
-    public List<House> searchByName(@PathVariable("name") String name) {
-        return queryDao.queryByName(name);
-    }
-
-    @RequestMapping("/search/{low}/{high}")
-    public List<House> searchPrice(@PathVariable("low") Integer low, @PathVariable("high") Integer high) {
-        return queryDao.queryByPriceRange(low, high);
-    }
-
-//    @RequestMapping("/query/{current}/{size}")
-//    public String boolQuery(@PathVariable("current") Integer current,
-//                            @PathVariable("size") Integer size,
-//                            QueryParamDTO queryParam, Model model) {
-//        List<House> houses = (List<House>) queryDao.searchHouse(queryParam,orderMode current, size).get("houses");
-//        PaginationDTO paginationDTO = new PaginationDTO();
-//        int totalPage = (int) (houseDao.getCount() / size);
-//        paginationDTO.setPagination(totalPage, current, size);
-//        model.addAttribute("houses", houses);
-//        model.addAttribute("pagination", paginationDTO);
-//        model.addAttribute("keyword", queryParam.getKeyword());
-//        return "search";
-//    }
 }

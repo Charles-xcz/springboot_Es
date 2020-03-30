@@ -17,10 +17,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-@Document(indexName = "es_house", type = "_doc",createIndex = false)
+@Document(indexName = "es_house", type = "_doc", createIndex = false)
 public class House {
     @Id
-    private String id;
+    private Long id;
     @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String title;
     @Field(type = FieldType.Text, analyzer = "ik_smart", searchAnalyzer = "ik_smart")
@@ -39,6 +39,7 @@ public class House {
     private Double area;
     @Field(type = FieldType.Keyword)
     private String design;
+    private String direction;
     @Field(type = FieldType.Keyword)
     private String decorate;
     @Field(type = FieldType.Keyword)
@@ -59,4 +60,8 @@ public class House {
     private Date createTime;
     @Field(type = FieldType.Date)
     private Date updateTime;
+
+    private int adminId;
+    private String cover;
+    private String status;
 }

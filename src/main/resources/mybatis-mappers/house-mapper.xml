@@ -2,11 +2,56 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ustc.charles.dao.HouseMapper">
+<mapper namespace="com.ustc.charles.dao.mapper.HouseMapper">
 
     <sql id="selectFields">
-        id, title, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
+        id, title,cover, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
     </sql>
+    <sql id="insertFields">
+        title,cover, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
+    </sql>
+    <insert id="save" keyProperty="id">
+        insert into ershoufang_lianjia
+        <include refid="insertFields"/>
+        values(#{title}, #{cover},#{houseType}, #{positions}, #{longitude}, #{latitude}, #{layout}, #{floor}, #{area},
+        #{design},
+        #{direction}, #{decorate},
+        #{lift}, #{liftProportion}, #{totalPrice}, #{avgPrice}, #{region}, #{locals}, #{community}, #{createTime},
+        #{updateTime})
+    </insert>
+    <update id="update">
+        update ershoufang_lianjia
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title!=null">title=#{title},</if>
+            <if test="cover!=null">cover=#{cover},</if>
+            <if test="houseType!=null">house_type=#{houseType},</if>
+            <if test="positions!=null">positions=#{positions},</if>
+            <if test="longitude!=null">longitude= #{longitude},</if>
+            <if test="latitude!=null">latitude=#{latitude},</if>
+            <if test="layout!=null">layout=#{layout},</if>
+            <if test="floor!=null">floor=#{floor},</if>
+            <if test="area!=null">area=#{area},</if>
+            <if test="design!=null">design=#{design},</if>
+            <if test="direction!=null">direction=#{direction},</if>
+            <if test="decorate!=null">decorate=#{decorate},</if>
+            <if test="lift!=null">lift=#{lift},</if>
+            <if test="liftProportion!=null">liftProportion=#{liftProportion},</if>
+            <if test="totalPrice!=null">totalPrice=#{totalPrice},</if>
+            <if test="avgPrice!=null">avgPrice=#{avgPrice},</if>
+            <if test="region!=null">region=#{region},</if>
+            <if test="locals!=null">locals=#{locals},</if>
+            <if test="community!=null">community=#{community},</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="updateTime!=null">update_time=#{updateTime},</if>
+        </trim>
+        where id=#{id}
+
+    </update>
+    <update id="updateCover">
+        update ershoufang_lianjia
+        set cover=#{path}
+        where id = #{houseId}
+    </update>
 
     <!--    <sql id="insertFields">-->
     <!--        user_id, entity_type, entity_id, target_id, content, status, create_time-->
@@ -20,6 +65,55 @@
                 limit #{offset}, #{limit}
             </if>
         </if>
+    </select>
+    <select id="findHouses" resultType="com.ustc.charles.model.House">
+        select
+        <include refid="selectFields"/>
+        from ershoufang_lianjia where 1=1
+        <if test="createTimeMin!=null">
+            create_time <![CDATA[ >= ]]>#{createTimeMin}
+        </if>
+        <if test="createTimeMax!=null">
+            and create_time <![CDATA[<= ]]>  #{createTimeMax}
+        </if>
+        <if test="title!=null">
+            and title like "%${title}%"
+        </if>
+        order by ${orderBy} ${direction}
+        <if test="length!=-1">
+            limit #{start}, #{length}
+        </if>
+        <if test="length==-1">
+            limit 1,10
+        </if>
+    </select>
+    <select id="findHousesCount" resultType="java.lang.Integer">
+        select
+        count(id)
+        from ershoufang_lianjia where 1=1
+        <if test="createTimeMin!=null">
+            create_time <![CDATA[ >= ]]>#{createTimeMin}
+        </if>
+        <if test="createTimeMax!=null">
+            and create_time <![CDATA[<= ]]>  #{createTimeMax}
+        </if>
+        <if test="title!=null">
+            and title like "%${title}%"
+        </if>
+    </select>
+    <select id="selectHouseById" resultType="com.ustc.charles.model.House">
+        select
+        <include refid="selectFields"/>
+        from ershoufang_lianjia
+        where id = #{id};
+    </select>
+    <select id="selectHousesByIds" resultType="com.ustc.charles.model.House">
+        select *
+        from ershoufang_lianjia
+        where 1>2 or id in
+        <foreach collection="list" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
     </select>
 
 

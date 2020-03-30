@@ -8,20 +8,20 @@ elasticsearch:
 
 #服务器端口
 server:
-  servlet:
-    context-path: /house
   port: 80
+  error:
+    whitelabel:
+      enabled: false
 
 spring:
   thymeleaf:
     cache: false
-
   profiles:
     active: dev
   # 需要更新的目录
-  devtools:
-    restart:
-      additional-paths: resources/**,static/**,templates/**
+  #  devtools:
+  #    restart:
+  #      additional-paths: resources/**,static/**,templates/**
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/es?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=Hongkong
@@ -39,6 +39,23 @@ spring:
     elasticsearch:
       cluster-name: charles
       cluster-nodes: localhost:9300
+
+    #redis
+  redis:
+    database: 10
+    host: localhost
+    port: 6379
+    #KafkaProperties
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: house-search-group
+      enable-auto-commit: true
+      auto-commit-interval: 3000
+    listener:
+      missing-topics-fatal: false
+#  jpa:
+#    open-in-view: true
 # MybatisProperties
 mybatis:
   type-aliases-package: com.ustc.charles.model
@@ -46,3 +63,31 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
     use-generated-keys: true
+
+# community
+house-search:
+  path:
+    domain: http://localhost:${server.port}
+    # 上传文件的保存路径
+    upload: D:/Study/Engineering_pratice/data/upload
+
+#wk
+wk:
+  image:
+    command: d:/develop/wkhtmltopdf/bin/wkhtmltoimage
+    storage: D:/Study/Engineering_pratice/data/wk-images
+
+#七牛
+qiniu:
+  key:
+    access: EtMiy4PbuQDUeyIvFzWvHowoptbCpSlQGavjojmb
+    secret: U2qWOMbLRmYHn-7CUpvTmZn1NRN31sWpSD7EvHSD
+  bucket:
+    name: house-search
+    url: http://q7szflboi.bkt.clouddn.com/
+
+#caffeine
+caffeine:
+  posts:
+    maxSize: 15
+    expire-seconds: 180
