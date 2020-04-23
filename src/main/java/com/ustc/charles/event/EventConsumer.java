@@ -3,8 +3,8 @@ package com.ustc.charles.event;
 import com.alibaba.fastjson.JSONObject;
 import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
-import com.ustc.charles.service.EsHouseService;
 import com.ustc.charles.service.HouseService;
+import com.ustc.charles.service.impl.EsHouseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class EventConsumer {
     @Autowired
     private HouseService houseService;
     @Autowired
-    private EsHouseService esHouseService;
+    private EsHouseServiceImpl esHouseService;
 
     @KafkaListener(topics = {EventMessage.TOPIC_PUBLISH, EventMessage.TOPIC_UPDATE, EventMessage.TOPIC_REMOVE})
     public void handlerAddMessage(ConsumerRecord record) {

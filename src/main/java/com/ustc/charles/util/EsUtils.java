@@ -59,7 +59,7 @@ public class EsUtils {
                 list.add(new HouseBucketDto(asString, bucket.getDocCount()));
                 count++;
             }
-            if (count >= 5) {
+            if (count >= 8) {
                 break;
             }
         }

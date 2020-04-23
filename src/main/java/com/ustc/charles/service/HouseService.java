@@ -3,7 +3,6 @@ package com.ustc.charles.service;
 import com.ustc.charles.dto.DatatableSearch;
 import com.ustc.charles.dto.HouseDto;
 import com.ustc.charles.entity.HouseForm;
-import com.ustc.charles.entity.RentSearch;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
@@ -34,8 +33,6 @@ public interface HouseService {
     ServiceResult removeTag(Long houseId, String tag);
 
     ServiceResult removePhoto(Long id);
-
-    ServiceMultiResult<HouseDto> query(RentSearch rentSearch);
 
     ServiceResult<House> findById(Long houseId);
 }

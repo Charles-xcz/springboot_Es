@@ -9,7 +9,7 @@ import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
 import com.ustc.charles.model.SupportAddress;
 import com.ustc.charles.service.AddressService;
-import com.ustc.charles.service.EsHouseService;
+import com.ustc.charles.service.impl.EsHouseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class HouseController {
 
     @Autowired
-    private EsHouseService esHouseService;
+    private EsHouseServiceImpl esHouseService;
     @Autowired
     private AddressService addressService;
 
@@ -45,29 +45,6 @@ public class HouseController {
         model.addAttribute("house", house);
         return "site/house-detail";
     }
-//
-//    @GetMapping("/index")
-//    public String getIndex0Page(Model model, Page page,
-//                                @RequestParam(name = "orderMode", defaultValue = "default") String orderMode) {
-//        page.setLimit(10);
-//        page.setPath("/index?orderMode=" + orderMode);
-//        page.setRows((int) esHouseService.getCount());
-//        /*
-//        将属性聚合,返回前端作为筛选条件
-//         */
-//        List<FieldAttributeDto> fieldAttributes = esHouseService.getFieldAttributes();
-//        model.addAttribute("fieldAttributes", fieldAttributes);
-//
-//        List<House> houses = esHouseService.listByPage(page.getCurrent(), page.getLimit(), orderMode);
-//        String sb = "";
-//
-//        model.addAttribute("params", sb);
-//        model.addAttribute("houses", houses);
-//        model.addAttribute("page", page);
-//        model.addAttribute("orderMode", orderMode);
-//        return "index";
-//    }
-
 
     @GetMapping("/search")
     public String searchHouse(QueryParamDto queryParamDTO,

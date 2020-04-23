@@ -5,8 +5,6 @@ import com.ustc.charles.dao.mapper.SupportAddressMapper;
 import com.ustc.charles.dto.MapAddressDto;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
-import com.ustc.charles.model.Subway;
-import com.ustc.charles.model.SubwayStation;
 import com.ustc.charles.model.SupportAddress;
 import com.ustc.charles.service.AddressService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author charles
@@ -73,9 +70,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public ServiceResult<MapAddressDto> positionToAddress(String position) {
+    public ServiceResult<MapAddressDto> positionToAddress(String latitude, String longitude) {
 //        31.225696563611,121.49884033194
-        String url = "http://api.map.baidu.com/reverse_geocoding/v3/?ak=rzGrOjn5WZaaW1I62iIrkTnkFlYcoxEU&output=json&coordtype=wgs84ll&location=" + position;
+        String url = "http://api.map.baidu.com/reverse_geocoding/v3/?ak=rzGrOjn5WZaaW1I62iIrkTnkFlYcoxEU&output=json&coordtype=wgs84ll&location=" + latitude + "," + longitude;
         Request request = new Request.Builder().url(url).build();
         try {
             Response response = okHttpClient.newCall(request).execute();
@@ -102,13 +99,4 @@ public class AddressServiceImpl implements AddressService {
         return ServiceResult.of(supportAddress);
     }
 
-    @Override
-    public ServiceResult<Subway> findSubway(Long subwayLineId) {
-        return null;
-    }
-
-    @Override
-    public ServiceResult<SubwayStation> findSubwayStation(Long subwayStationId) {
-        return null;
-    }
 }

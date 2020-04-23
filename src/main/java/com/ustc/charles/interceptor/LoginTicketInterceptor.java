@@ -2,7 +2,7 @@ package com.ustc.charles.interceptor;
 
 import com.ustc.charles.entity.LoginTicket;
 import com.ustc.charles.model.User;
-import com.ustc.charles.service.UserService;
+import com.ustc.charles.service.impl.UserServiceImpl;
 import com.ustc.charles.util.CommonUtil;
 import com.ustc.charles.entity.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.Date;
 @Component
 public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Autowired
     private HostHolder hostHolder;

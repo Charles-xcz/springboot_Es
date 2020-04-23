@@ -3,6 +3,7 @@ package com.ustc.charles.service;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.ustc.charles.EsApplicationTests;
+import com.ustc.charles.service.impl.QiNiuServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.io.File;
  */
 public class QiNiuServiceTest extends EsApplicationTests {
     @Autowired
-    private QiNiuService qiNiuService;
+    private QiNiuServiceImpl qiNiuService;
 
     @Test
     public void testUploadFile() {

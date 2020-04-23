@@ -1,89 +1,33 @@
 package com.ustc.charles.service;
 
-import com.ustc.charles.dao.esrepository.EsHouseRepository;
-import com.ustc.charles.dao.esrepository.QueryRepository;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.model.House;
-import com.ustc.charles.util.RedisKeyUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author charles
- * @date 2020/3/25 9:34
+ * @date 2020/4/23 14:30
  */
-@Service
-@Slf4j
-public class EsHouseService {
-    @Autowired
-    private EsHouseRepository esHouseRepository;
-    @Autowired
-    private QueryRepository queryRepository;
-    @Autowired
-    private RedisTemplate redisTemplate;
+public interface EsHouseService {
+    House findById(String id);
 
-    public House findById(String id) {
-        return queryRepository.getById(id);
-    }
+    void save(House house);
 
-    public void save(House house) {
-        esHouseRepository.save(house);
-    }
+    void saveAll(List<House> houses);
 
-    public void saveAll(List<House> houses) {
-        esHouseRepository.saveAll(houses);
-    }
+    void deleteById(Long houseId);
 
-    public void deleteById(Long houseId) {
-        esHouseRepository.deleteById(Math.toIntExact(houseId));
-    }
+    long getCount();
 
-    public long getCount() {
-        return esHouseRepository.count();
-    }
+    List<House> listByPage(int current, int limit, String sortField);
 
-    public List<House> listByPage(int current, int limit, String sortField) {
-        return queryRepository.listByPage(current, limit, sortField);
-    }
+    ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, int offset, int limit);
 
-    public ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, int offset, int limit) {
-        return queryRepository.searchHouse(queryParam, orderMode, offset, limit);
-    }
+    ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String city);
 
-    public ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String city) {
-        String key = RedisKeyUtil.getFieldAggKey(city);
-        List<FieldAttributeDto> fieldAttributes = redisTemplate.opsForList().range(key, 0, -1);
-
-        if (fieldAttributes != null && fieldAttributes.size() != 0) {
-            log.debug("属性聚合:{},", fieldAttributes.size());
-            return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
-        }
-        fieldAttributes = queryRepository.getFieldAttribute();
-
-        redisTemplate.opsForList().rightPushAll(key, fieldAttributes);
-        redisTemplate.expire(key, 24, TimeUnit.HOURS);
-        return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
-    }
-
-    public ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName) {
-        return queryRepository.mapAggregate(cityEnName);
-    }
-
+    ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName);
 }

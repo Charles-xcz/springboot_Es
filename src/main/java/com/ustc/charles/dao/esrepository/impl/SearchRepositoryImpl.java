@@ -1,7 +1,7 @@
 package com.ustc.charles.dao.esrepository.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.ustc.charles.dao.esrepository.QueryRepository;
+import com.ustc.charles.dao.esrepository.SearchRepository;
 import com.ustc.charles.dao.mapper.HouseMapper;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
@@ -41,7 +41,7 @@ import java.util.Map;
  */
 @Slf4j
 @Repository
-public class QueryRepositoryImpl implements QueryRepository {
+public class SearchRepositoryImpl implements SearchRepository {
 
     @Autowired
     private TransportClient client;
@@ -57,10 +57,12 @@ public class QueryRepositoryImpl implements QueryRepository {
         List<FieldAttributeDto> fieldAttributes = new ArrayList<>();
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type);
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "houseType"));
-        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "layout"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "region"));
+        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "community"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "floor"));
+        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "layout"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "design"));
+        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "decorate"));
         return fieldAttributes;
     }
 
@@ -68,7 +70,7 @@ public class QueryRepositoryImpl implements QueryRepository {
     public ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName) {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type).
                 //暂时还没有城市字段--待添加
-                addAggregation(AggregationBuilders.terms("regionAgg").field("region.keyword"));
+                        addAggregation(AggregationBuilders.terms("regionAgg").field("region.keyword"));
         SearchResponse response = searchRequestBuilder.get();
         List<HouseBucketDto> buckets = new ArrayList<>();
         if (response.status() != RestStatus.OK) {
@@ -142,6 +144,7 @@ public class QueryRepositoryImpl implements QueryRepository {
         if (queryParam.getKeyword() != null && !StringUtils.isBlank(queryParam.getKeyword())) {
             qb.must(QueryBuilders.matchQuery("title", queryParam.getKeyword()))
                     .should(QueryBuilders.matchQuery("houseType", queryParam.getKeyword()))
+                    .should(QueryBuilders.matchQuery("community", queryParam.getKeyword()))
                     .should(QueryBuilders.matchQuery("region", queryParam.getKeyword()))
                     .should(QueryBuilders.matchQuery("layout", queryParam.getKeyword()));
         }

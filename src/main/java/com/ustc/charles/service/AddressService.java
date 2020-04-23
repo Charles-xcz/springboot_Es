@@ -3,8 +3,6 @@ package com.ustc.charles.service;
 import com.ustc.charles.dto.MapAddressDto;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
-import com.ustc.charles.model.Subway;
-import com.ustc.charles.model.SubwayStation;
 import com.ustc.charles.model.SupportAddress;
 
 import java.util.Map;
@@ -39,7 +37,7 @@ public interface AddressService {
      */
     ServiceMultiResult<SupportAddress> findAllRegionsByCityName(String cityName);
 
-    ServiceResult<MapAddressDto> positionToAddress(String position);
+    ServiceResult<MapAddressDto> positionToAddress(String latitude, String longitude);
 
 //        /**
 //         * 获取该城市所有的地铁线路
@@ -81,15 +79,6 @@ public interface AddressService {
      */
     ServiceResult<SupportAddress> findCity(String cityEnName);
 
-    ServiceResult<Subway> findSubway(Long subwayLineId);
-
-    ServiceResult<SubwayStation> findSubwayStation(Long subwayStationId);
-//
-//        /**
-//         * 根据城市以及具体地位获取百度地图的经纬度
-//         */
-//        ServiceMultiResult<BaiduMapLocation> getBaiduMapLocation(String city, String address);
-//
 //        /**
 //         * 上传百度LBS数据
 //         */

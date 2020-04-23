@@ -6,6 +6,7 @@ import lombok.Data;
  * @author charles
  * @date 2020/3/27 12:16
  */
+@Deprecated
 @Data
 public class HousePicture {
     private Long id;

@@ -1,6 +1,5 @@
 package com.ustc.charles.dto;
 
-import com.ustc.charles.model.HouseDetail;
 import com.ustc.charles.model.HousePicture;
 import lombok.Data;
 
@@ -37,7 +36,7 @@ public class HouseDto implements Serializable {
     private String street;
     private String cover;
     private int distanceToSubway;
-    private HouseDetail houseDetail;
+//    private HouseDetail houseDetail;
     private List<String> tags;
     private List<HousePicture> pictures;
     private int subscribeStatus;

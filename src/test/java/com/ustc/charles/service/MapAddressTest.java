@@ -16,7 +16,7 @@ public class MapAddressTest extends EsApplicationTests {
 
     @Test
     public void testPositionToAddress() {
-        ServiceResult<MapAddressDto> result = addressService.positionToAddress("31.225696563611,121.49884033194");
+        ServiceResult<MapAddressDto> result = addressService.positionToAddress("31.335843", "120.737694");
         if (result.isSuccess()) {
             System.out.println(result.getResult());
         }

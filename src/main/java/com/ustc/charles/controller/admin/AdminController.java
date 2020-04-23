@@ -8,13 +8,11 @@ import com.ustc.charles.dto.*;
 import com.ustc.charles.entity.HouseForm;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
-import com.ustc.charles.model.HouseDetail;
 import com.ustc.charles.model.SupportAddress;
 import com.ustc.charles.service.AddressService;
 import com.ustc.charles.service.HouseService;
-import com.ustc.charles.service.QiNiuService;
+import com.ustc.charles.service.impl.QiNiuServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -36,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class AdminController {
     @Autowired
-    private QiNiuService qiNiuService;
+    private QiNiuServiceImpl qiNiuService;
     @Autowired
     private AddressService addressService;
     @Autowired
@@ -195,7 +193,7 @@ public class AdminController {
         Map<SupportAddress.Level, SupportAddress> addressMap = addressService.findCityAndRegion(result.getCityEnName(), result.getRegionEnName());
         model.addAttribute("city", addressMap.get(SupportAddress.Level.CITY));
         model.addAttribute("region", addressMap.get(SupportAddress.Level.REGION));
-        HouseDetail detail = result.getHouseDetail();
+//        HouseDetail detail = result.getHouseDetail();
 //        ServiceResult<Subway> subwayServiceResult = addressService.findSubway(detail.getSubwayLineId());
 //        if (subwayServiceResult.isSuccess()) {
 //            model.addAttribute("subway", subwayServiceResult.getResult());

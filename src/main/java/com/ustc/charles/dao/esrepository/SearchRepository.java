@@ -14,7 +14,7 @@ import java.util.List;
  * @author charles
  * @date 2020/1/21 12:01
  */
-public interface QueryRepository {
+public interface SearchRepository {
 
 
     ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName);
