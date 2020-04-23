@@ -38,5 +38,5 @@ public class FieldAttributeDto {
     /**
      * 字段值的聚合
      */
-    private List<String> values;
+    private List<HouseBucketDto> houseBuckets;
 }

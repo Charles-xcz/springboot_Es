@@ -23,6 +23,8 @@ public class House {
     private Long id;
     @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String title;
+    @Field(type = FieldType.Keyword)
+    private String url;
     @Field(type = FieldType.Text, analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String houseType;
     @Field(type = FieldType.Keyword)

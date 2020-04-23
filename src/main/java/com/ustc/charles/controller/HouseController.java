@@ -1,10 +1,14 @@
 package com.ustc.charles.controller;
 
 import com.ustc.charles.dto.FieldAttributeDto;
+import com.ustc.charles.dto.HouseBucketDto;
+import com.ustc.charles.dto.Page;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
+import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
-import com.ustc.charles.dto.Page;
+import com.ustc.charles.model.SupportAddress;
+import com.ustc.charles.service.AddressService;
 import com.ustc.charles.service.EsHouseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +18,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -30,6 +35,8 @@ public class HouseController {
 
     @Autowired
     private EsHouseService esHouseService;
+    @Autowired
+    private AddressService addressService;
 
 
     @GetMapping("/detail/{id}")
@@ -84,7 +91,7 @@ public class HouseController {
         model.addAttribute("page", page);
         model.addAttribute("orderMode", orderMode);
         model.addAttribute("keyword", queryParamDTO.getKeyword());
-        return "search2";
+        return "search";
     }
 
     private String getParamString(HttpServletRequest request) {
@@ -104,4 +111,26 @@ public class HouseController {
         }
         return s;
     }
+
+    @GetMapping("/map")
+    public String rentMapPage(@RequestParam(value = "cityEnName") String cityEnName,
+                              Model model,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        ServiceResult<SupportAddress> city = addressService.findCity(cityEnName);
+        if (!city.isSuccess()) {
+            redirectAttributes.addAttribute("msg", "must_chose_city");
+            return "redirect:/index";
+        } else {
+            session.setAttribute("cityName", cityEnName);
+            model.addAttribute("city", city.getResult());
+        }
+        ServiceMultiResult<SupportAddress> regions = addressService.findAllRegionsByCityName(cityEnName);
+        ServiceMultiResult<HouseBucketDto> serviceResult = esHouseService.mapAggregate(cityEnName);
+        model.addAttribute("aggData", serviceResult.getResult());
+        model.addAttribute("total", serviceResult.getTotal());
+        model.addAttribute("regions", regions.getResult());
+        return "rent-map";
+    }
+
 }

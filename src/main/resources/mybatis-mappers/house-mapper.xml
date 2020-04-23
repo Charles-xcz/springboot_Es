@@ -5,25 +5,23 @@
 <mapper namespace="com.ustc.charles.dao.mapper.HouseMapper">
 
     <sql id="selectFields">
-        id, title,cover, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
+        id,url, title, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
     </sql>
     <sql id="insertFields">
-        title,cover, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
+        title,house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
     </sql>
     <insert id="save" keyProperty="id">
         insert into ershoufang_lianjia
         <include refid="insertFields"/>
-        values(#{title}, #{cover},#{houseType}, #{positions}, #{longitude}, #{latitude}, #{layout}, #{floor}, #{area},
-        #{design},
-        #{direction}, #{decorate},
-        #{lift}, #{liftProportion}, #{totalPrice}, #{avgPrice}, #{region}, #{locals}, #{community}, #{createTime},
-        #{updateTime})
+        values(#{title},#{houseType}, #{positions}, #{longitude}, #{latitude}, #{layout}, #{floor}, #{area},
+        #{design},#{direction}, #{decorate},#{lift}, #{liftProportion}, #{totalPrice}, #{avgPrice}, #{region},
+        #{locals}, #{community}, #{createTime},#{updateTime})
     </insert>
     <update id="update">
         update ershoufang_lianjia
         <trim prefix="set" suffixOverrides=",">
             <if test="title!=null">title=#{title},</if>
-            <if test="cover!=null">cover=#{cover},</if>
+            <!--<if test="cover!=null">cover=#{cover},</if>-->
             <if test="houseType!=null">house_type=#{houseType},</if>
             <if test="positions!=null">positions=#{positions},</if>
             <if test="longitude!=null">longitude= #{longitude},</if>

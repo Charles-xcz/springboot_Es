@@ -1,17 +1,9 @@
 package com.ustc.charles.controller;
 
-import com.ustc.charles.dto.FieldAttributeDto;
-import com.ustc.charles.dto.Page;
-import com.ustc.charles.model.House;
 import com.ustc.charles.service.EsHouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author charles
@@ -19,12 +11,10 @@ import java.util.List;
  */
 @Controller
 public class HomeController {
-    @Autowired
-    private EsHouseService esHouseService;
 
-    @GetMapping("/")
+    @GetMapping({"/", "/index"})
     public String root() {
-        return "redirect:/index";
+        return "redirect:/house/search";
     }
 
     @GetMapping("/404")

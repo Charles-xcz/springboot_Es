@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ustc.charles.dao.esrepository.QueryRepository;
 import com.ustc.charles.dao.mapper.HouseMapper;
 import com.ustc.charles.dto.FieldAttributeDto;
+import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.entity.ServiceMultiResult;
@@ -17,7 +18,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -60,6 +64,23 @@ public class QueryRepositoryImpl implements QueryRepository {
         return fieldAttributes;
     }
 
+    @Override
+    public ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName) {
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type).
+                //暂时还没有城市字段--待添加
+                addAggregation(AggregationBuilders.terms("regionAgg").field("region.keyword"));
+        SearchResponse response = searchRequestBuilder.get();
+        List<HouseBucketDto> buckets = new ArrayList<>();
+        if (response.status() != RestStatus.OK) {
+            log.warn("Aggregate status is not ok for " + searchRequestBuilder);
+            return new ServiceMultiResult<>(buckets, 0);
+        }
+        Terms terms = response.getAggregations().get("regionAgg");
+        for (Terms.Bucket bucket : terms.getBuckets()) {
+            buckets.add(new HouseBucketDto(bucket.getKeyAsString(), bucket.getDocCount()));
+        }
+        return new ServiceMultiResult<>(buckets, response.getHits().getTotalHits());
+    }
 
     @Override
     public List<House> listByPage(Integer currentPage, Integer pageSize, String sortField) {
@@ -163,6 +184,6 @@ public class QueryRepositoryImpl implements QueryRepository {
             House house = JSON.parseObject(JSON.toJSONString(map), House.class);
             houses.add(house);
         }
-        return new ServiceMultiResult<>(EsUtils.hitsToBeans(response.getHits()), totalHits);
+        return new ServiceMultiResult<>(houses, totalHits);
     }
 }

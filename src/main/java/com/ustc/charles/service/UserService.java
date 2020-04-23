@@ -2,10 +2,10 @@ package com.ustc.charles.service;
 
 import com.alibaba.fastjson.JSON;
 import com.ustc.charles.dao.mapper.UserMapper;
+import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.entity.LoginTicket;
 import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.User;
-import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.util.CommonUtil;
 import com.ustc.charles.util.RedisKeyUtil;
 import okhttp3.OkHttpClient;
@@ -217,17 +217,12 @@ public class UserService implements CommonConstant {
         User user = this.findUserById(userId).getResult();
         List<GrantedAuthority> list = new ArrayList<>();
         list.add(new GrantedAuthority() {
-
             @Override
             public String getAuthority() {
-                switch (user.getType()) {
-                    case 1:
-                        return AUTHORITY_ADMIN;
-                    case 2:
-                        return AUTHORITY_MODERATOR;
-                    default:
-                        return AUTHORITY_USER;
+                if (user.getType() == 1) {
+                    return AUTHORITY_ADMIN;
                 }
+                return AUTHORITY_USER;
             }
         });
         return list;

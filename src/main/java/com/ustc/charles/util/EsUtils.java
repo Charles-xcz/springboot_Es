@@ -2,6 +2,7 @@ package com.ustc.charles.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ustc.charles.dto.FieldAttributeDto;
+import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.model.House;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,26 +45,25 @@ public class EsUtils {
         FieldAttributeDto fieldAttribute = new FieldAttributeDto();
         fieldAttribute.setField(field);
         fieldAttribute.setName(FieldAttributeDto.FIELD_TO_NAME.get(field));
-
         SearchRequestBuilder requestBuilder = rb.addAggregation(AggregationBuilders.terms(field + "Agg").field(field + ".keyword"));
         log.debug(requestBuilder.toString());
         SearchResponse response = requestBuilder.get();
         Map<String, Aggregation> asMap = response.getAggregations().getAsMap();
         StringTerms houseTypeTerms = (StringTerms) asMap.get(field + "Agg");
         List<StringTerms.Bucket> buckets = houseTypeTerms.getBuckets();
-        List<String> list = new ArrayList<>();
+        List<HouseBucketDto> list = new ArrayList<>();
         int count = 0;
         for (StringTerms.Bucket bucket : buckets) {
             String asString = bucket.getKeyAsString();
             if (!StringUtils.isBlank(asString) && !asString.equals("暂无数据")) {
-                list.add(asString);
+                list.add(new HouseBucketDto(asString, bucket.getDocCount()));
                 count++;
             }
             if (count >= 5) {
                 break;
             }
         }
-        fieldAttribute.setValues(list);
+        fieldAttribute.setHouseBuckets(list);
         return fieldAttribute;
     }
 

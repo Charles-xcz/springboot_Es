@@ -27,13 +27,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
                 //授权:基于权限的授权,更灵活(建议使用)
-                .antMatchers("/user/setting", "/user/upload",
-                        "/discuss/add", "/comment/add/**", "/letter/**",
-                        "/notice/**", "/like", "/follow", "/unfollow")
-                .hasAnyAuthority(AUTHORITY_ADMIN, AUTHORITY_MODERATOR, AUTHORITY_USER)
-                .antMatchers("/discuss/top", "/discuss/wonderful")
-                .hasAuthority(AUTHORITY_MODERATOR)
-                .antMatchers("/discuss/delete", "/data/**", "actuator/**")
+                .antMatchers("/user/setting")
+                .hasAnyAuthority(AUTHORITY_ADMIN, AUTHORITY_USER)
+                .antMatchers("/admin/**")
                 .hasAuthority(AUTHORITY_ADMIN)
                 .anyRequest().permitAll()
                 .and()

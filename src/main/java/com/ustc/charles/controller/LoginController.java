@@ -1,9 +1,9 @@
 package com.ustc.charles.controller;
 
 import com.google.code.kaptcha.Producer;
+import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.model.User;
 import com.ustc.charles.service.UserService;
-import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.util.CommonUtil;
 import com.ustc.charles.util.RedisKeyUtil;
 import lombok.extern.slf4j.Slf4j;

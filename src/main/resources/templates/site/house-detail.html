@@ -12,7 +12,7 @@
 <body>
 <div class="nk-container">
     <!-- 头部 -->
-    <header class="bg-dark sticky-top" th:replace="index::header">
+    <header class="bg-dark sticky-top" th:replace="search::header">
     </header>
 
     <!-- 内容 -->
@@ -157,7 +157,7 @@
         <!--                </li>-->
         <!--            </ul>-->
         <!-- 分页 -->
-        <nav class="mt-5" th:replace="index::pagination">
+        <nav class="mt-5" th:replace="search::pagination">
         </nav>
     </div>
     <!-- 回帖输入 -->
@@ -177,7 +177,7 @@
 </div>
 
 <!-- 尾部 -->
-<footer class="bg-dark" th:replace="index::footer">
+<footer class="bg-dark" th:replace="search::footer">
 </footer>
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>

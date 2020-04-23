@@ -1,5 +1,6 @@
 package com.ustc.charles.service;
 
+import com.ustc.charles.dto.MapAddressDto;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.Subway;
@@ -37,6 +38,8 @@ public interface AddressService {
      * @return
      */
     ServiceMultiResult<SupportAddress> findAllRegionsByCityName(String cityName);
+
+    ServiceResult<MapAddressDto> positionToAddress(String position);
 
 //        /**
 //         * 获取该城市所有的地铁线路

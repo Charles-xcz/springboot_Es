@@ -1,6 +1,3 @@
-/**
- * Created by 瓦力.
- */
 var regionCountMap = {}, // 地区数据
     labels = [], // 标签列表
     params = {

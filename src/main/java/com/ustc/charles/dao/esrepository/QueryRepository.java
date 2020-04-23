@@ -1,10 +1,10 @@
 package com.ustc.charles.dao.esrepository;
 
 import com.ustc.charles.dto.FieldAttributeDto;
+import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.model.House;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface QueryRepository {
 
+
+    ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName);
 
     /**
      * 分页查询所有房屋信息,根据字段field排序

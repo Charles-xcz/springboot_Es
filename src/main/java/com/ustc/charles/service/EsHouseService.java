@@ -3,15 +3,25 @@ package com.ustc.charles.service;
 import com.ustc.charles.dao.esrepository.EsHouseRepository;
 import com.ustc.charles.dao.esrepository.QueryRepository;
 import com.ustc.charles.dto.FieldAttributeDto;
+import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.model.House;
 import com.ustc.charles.util.RedisKeyUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -71,4 +81,9 @@ public class EsHouseService {
         redisTemplate.expire(key, 24, TimeUnit.HOURS);
         return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
     }
+
+    public ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName) {
+        return queryRepository.mapAggregate(cityEnName);
+    }
+
 }
