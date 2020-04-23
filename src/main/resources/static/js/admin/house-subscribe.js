@@ -1,6 +1,3 @@
-/**
- * Created by 瓦力.
- */
 // 【关键】数据显示控制 服务器分页
 var table = $('#data-table').DataTable({
         "pageLength": 3, // 配置单页显示条数

@@ -1,7 +1,3 @@
-/**
- * Created by 瓦力.
- */
-
 $(function () {
     $('.xunwu-header .center-page').addClass('on');
 
