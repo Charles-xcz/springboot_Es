@@ -8,10 +8,17 @@
 <div th:include="admin/common :: left_menu"></div>
 <section class="Hui-article-box">
     <div id="Hui-tabNav" class="Hui-tabNav hidden-xs">
+<!--        <div class="Hui-tabNav-wp">-->
+<!--            <ul id="min_title_list" class="acrossTab cl">-->
+<!--                <li class="active">-->
+<!--                    <span title="我的桌面" data-href="/admin/welcome">我的桌面</span>-->
+<!--                    <em></em></li>-->
+<!--            </ul>-->
+<!--        </div>-->
         <div class="Hui-tabNav-wp">
             <ul id="min_title_list" class="acrossTab cl">
                 <li class="active">
-                    <span title="我的桌面" data-href="/admin/welcome">我的桌面</span>
+                    <span title="房源管理" data-href="/admin/house/list">房源管理</span>
                     <em></em></li>
             </ul>
         </div>
@@ -23,7 +30,7 @@
     <div id="iframe_box" class="Hui-article">
         <div class="show_iframe">
             <div style="display:none" class="loading"></div>
-            <iframe scrolling="yes" frameborder="0" th:src="@{/admin/welcome}"></iframe>
+            <iframe scrolling="yes" frameborder="0" th:src="@{/admin/house/list}"></iframe>
         </div>
     </div>
 </section>

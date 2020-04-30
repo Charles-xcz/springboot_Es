@@ -5,7 +5,8 @@ package com.ustc.charles.entity;
  * @date 2020/3/24 21:38
  */
 public interface CommonConstant {
-    String SORT_DEFAULT = "default";
+    String SORT_DEFAULT_DESC = "default-desc";
+    String SORT_DEFAULT_ASC = "default-asc";
     String SORT_AVG_PRICE = "avg_price";
     String SORT_TOTAL_PRICE = "total_price";
     String SORT_UPDATE_TIME = "update_time";

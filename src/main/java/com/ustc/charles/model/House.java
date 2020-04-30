@@ -23,6 +23,7 @@ import java.util.Date;
 public class House {
     @Id
     private Long id;
+    private Long houseId;
     @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String title;
     @Field(type = FieldType.Keyword)
@@ -41,6 +42,8 @@ public class House {
     private String floor;
     @Field(type = FieldType.Double)
     private Double area;
+    @Field(type = FieldType.Text)
+    private String cityName;
     @Field(type = FieldType.Keyword)
     private String design;
     private String direction;
@@ -64,8 +67,7 @@ public class House {
     private Date createTime;
     @Field(type = FieldType.Date)
     private Date updateTime;
-
-    private int adminId;
-    private String cover;
+    @Field(type = FieldType.Text)
+    private String registerTime;
     private String status;
 }

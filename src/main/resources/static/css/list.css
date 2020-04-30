@@ -1394,6 +1394,11 @@ body {
 
 .house-lst .where span {
     color: #333;
+    font-size: 13px;
+    display: inline-block
+}
+.house-lst .where .community {
+    color: royalblue;
     font-size: 14px;
     display: inline-block
 }

@@ -3,11 +3,14 @@ package com.ustc.charles.controller.admin;
 import com.alibaba.fastjson.JSONObject;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
-import com.qiniu.util.StringUtils;
-import com.ustc.charles.dto.*;
+import com.ustc.charles.dto.ApiDataTableResponse;
+import com.ustc.charles.dto.ApiResponse;
+import com.ustc.charles.dto.DatatableSearch;
+import com.ustc.charles.dto.QiNiuDto;
 import com.ustc.charles.entity.HouseForm;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
+import com.ustc.charles.model.House;
 import com.ustc.charles.model.SupportAddress;
 import com.ustc.charles.service.AddressService;
 import com.ustc.charles.service.HouseService;
@@ -42,10 +45,8 @@ public class AdminController {
 
     /**
      * 后台管理中心
-     *
-     * @return
      */
-    @GetMapping("/center")
+    @GetMapping({"/center", "/"})
     public String adminCenterPage() {
         return "admin/center";
     }
@@ -67,8 +68,6 @@ public class AdminController {
 
     /**
      * 管理员登录页
-     *
-     * @return
      */
     @GetMapping("/login")
     public String adminLoginPage() {
@@ -77,8 +76,6 @@ public class AdminController {
 
     /**
      * 房源列表页
-     *
-     * @return
      */
     @GetMapping("/house/list")
     public String houseListPage() {
@@ -88,7 +85,7 @@ public class AdminController {
     @PostMapping("/houses")
     @ResponseBody
     public ApiDataTableResponse houses(@ModelAttribute DatatableSearch searchBody) {
-        ServiceMultiResult<HouseDto> result = houseService.adminQuery(searchBody);
+        ServiceMultiResult<House> result = houseService.adminQuery(searchBody);
         ApiDataTableResponse response = new ApiDataTableResponse(ApiResponse.Status.SUCCESS);
         response.setData(result.getResult());
         response.setRecordsFiltered(result.getTotal());
@@ -165,7 +162,7 @@ public class AdminController {
             return ApiResponse.ofStatus(ApiResponse.Status.NOT_VALID_PARAM);
         }
 
-        ServiceResult<HouseDto> result = houseService.save(houseForm);
+        ServiceResult<House> result = houseService.save(houseForm);
         if (result.isSuccess()) {
             return ApiResponse.ofSuccess(result.getResult());
         }
@@ -182,27 +179,11 @@ public class AdminController {
         if (id == null || id < 1) {
             return "404";
         }
-        ServiceResult<HouseDto> serviceResult = houseService.findCompleteById(id);
+        ServiceResult<House> serviceResult = houseService.findById(id);
         if (!serviceResult.isSuccess()) {
             return "404";
         }
-
-        HouseDto result = serviceResult.getResult();
-        model.addAttribute("house", result);
-
-        Map<SupportAddress.Level, SupportAddress> addressMap = addressService.findCityAndRegion(result.getCityEnName(), result.getRegionEnName());
-        model.addAttribute("city", addressMap.get(SupportAddress.Level.CITY));
-        model.addAttribute("region", addressMap.get(SupportAddress.Level.REGION));
-//        HouseDetail detail = result.getHouseDetail();
-//        ServiceResult<Subway> subwayServiceResult = addressService.findSubway(detail.getSubwayLineId());
-//        if (subwayServiceResult.isSuccess()) {
-//            model.addAttribute("subway", subwayServiceResult.getResult());
-//        }
-
-//        ServiceResult<SubwayStation> subwayStationServiceResult = addressService.findSubwayStation(detail.getSubwayStationId());
-//        if (subwayStationServiceResult.isSuccess()) {
-//            model.addAttribute("station", subwayStationServiceResult.getResult());
-//        }
+        House result = serviceResult.getResult();
         return "admin/house-edit";
     }
 
@@ -229,87 +210,12 @@ public class AdminController {
         return response;
     }
 
-    /**
-     * 移除图片接口
-     *
-     * @param id
-     * @return
-     */
-    @DeleteMapping("/house/photo")
+    @GetMapping("/house/operate/{id}/{op}")
     @ResponseBody
-    public ApiResponse removeHousePhoto(@RequestParam(value = "id") Long id) {
-        ServiceResult result = this.houseService.removePhoto(id);
-        if (result.isSuccess()) {
-            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
-        } else {
-            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+    public ApiResponse deleteHouse(@PathVariable("id") Long id, @PathVariable("op") Integer op) {
+        if (op == 3) {
+            houseService.deleteHouse(id);
         }
+        return ApiResponse.ofSuccess(ApiResponse.Status.SUCCESS);
     }
-
-    /**
-     * 修改封面接口
-     *
-     * @param coverId
-     * @param targetId
-     * @return
-     */
-    @PostMapping("/house/cover")
-    @ResponseBody
-    public ApiResponse updateCover(@RequestParam(value = "cover_id") Long coverId,
-                                   @RequestParam(value = "target_id") Long targetId) {
-        ServiceResult result = houseService.updateCover(coverId, targetId);
-
-        if (result.isSuccess()) {
-            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
-        } else {
-            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
-        }
-    }
-
-    /**
-     * 增加标签接口
-     *
-     * @param houseId
-     * @param tag
-     * @return
-     */
-    @PostMapping("/house/tag")
-    @ResponseBody
-    public ApiResponse addHouseTag(@RequestParam(value = "house_id") Long houseId,
-                                   @RequestParam(value = "tag") String tag) {
-        if (houseId < 1 || StringUtils.isNullOrEmpty(tag)) {
-            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
-        }
-        ServiceResult result = this.houseService.addTag(houseId, tag);
-        if (result.isSuccess()) {
-            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
-        } else {
-            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
-        }
-    }
-
-    /**
-     * 移除标签接口
-     *
-     * @param houseId
-     * @param tag
-     * @return
-     */
-    @DeleteMapping("/house/tag")
-    @ResponseBody
-    public ApiResponse removeHouseTag(@RequestParam(value = "house_id") Long houseId,
-                                      @RequestParam(value = "tag") String tag) {
-        if (houseId < 1 || StringUtils.isNullOrEmpty(tag)) {
-            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
-        }
-
-        ServiceResult result = this.houseService.removeTag(houseId, tag);
-        if (result.isSuccess()) {
-            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
-        } else {
-            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
-        }
-    }
-
-
 }

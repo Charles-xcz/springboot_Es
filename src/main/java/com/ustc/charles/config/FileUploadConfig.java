@@ -20,6 +20,8 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 
 /**
+ * 文件上传七牛云的配置类
+ *
  * @author charles
  * @date 2020/3/26 22:11
  */
@@ -90,8 +92,4 @@ public class FileUploadConfig {
         return new BucketManager(auth(), qiniuConfig());
     }
 
-//    @Bean
-//    public Gson gson() {
-//        return new Gson();
-//    }
 }

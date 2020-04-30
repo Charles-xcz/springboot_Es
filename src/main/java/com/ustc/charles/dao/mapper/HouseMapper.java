@@ -30,4 +30,6 @@ public interface HouseMapper {
     List<House> selectHousesByIds(List<Long> ids);
 
     int updateCover(Long houseId, String path);
+
+    long delete(Long id);
 }

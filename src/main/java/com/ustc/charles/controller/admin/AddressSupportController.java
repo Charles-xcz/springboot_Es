@@ -26,8 +26,6 @@ public class AddressSupportController {
 
     /**
      * 获取支持城市列表
-     *
-     * @return
      */
     @GetMapping("/cities")
     @ResponseBody

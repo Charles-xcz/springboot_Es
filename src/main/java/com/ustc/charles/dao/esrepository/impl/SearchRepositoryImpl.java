@@ -2,12 +2,12 @@ package com.ustc.charles.dao.esrepository.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ustc.charles.dao.esrepository.SearchRepository;
-import com.ustc.charles.dao.mapper.HouseMapper;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.entity.ServiceMultiResult;
+import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
 import com.ustc.charles.util.EsUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -24,16 +24,19 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author charles
@@ -49,13 +52,12 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String index;
     @Value("${elasticsearch.type}")
     private String type;
-    @Resource
-    private HouseMapper houseMapper;
 
     @Override
     public List<FieldAttributeDto> getFieldAttribute() {
         List<FieldAttributeDto> fieldAttributes = new ArrayList<>();
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type);
+        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "cityName"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "houseType"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "region"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "community"));
@@ -84,10 +86,11 @@ public class SearchRepositoryImpl implements SearchRepository {
         return new ServiceMultiResult<>(buckets, response.getHits().getTotalHits());
     }
 
+    //
     @Override
     public List<House> listByPage(Integer currentPage, Integer pageSize, String sortField) {
         SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type);
-        if (CommonConstant.SORT_DEFAULT.equals(sortField)) {
+        if (CommonConstant.SORT_DEFAULT_DESC.equals(sortField)) {
             requestBuilder.addSort(SortBuilders.scoreSort());
         } else {
             requestBuilder.addSort(SortBuilders.fieldSort(sortField).order(SortOrder.DESC));
@@ -95,7 +98,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         requestBuilder.setFrom((currentPage - 1) * pageSize).setSize(pageSize);
 
         log.debug(requestBuilder.toString());
-
         SearchResponse response = requestBuilder.get();
         return EsUtils.hitsToBeans(response.getHits());
     }
@@ -128,8 +130,26 @@ public class SearchRepositoryImpl implements SearchRepository {
             qb.must(priceQb);
         }
         /*
+        面积条件
+         */
+        List<String> areas = queryParam.getArea();
+        if (null != areas) {
+            BoolQueryBuilder areaQb = QueryBuilders.boolQuery();
+            for (String area : areas) {
+                String[] split = area.split("-");
+                if (Integer.parseInt(split[1]) != 0) {
+                    areaQb.should(QueryBuilders.rangeQuery("area").gte(Double.parseDouble(split[0])).lte(Double.parseDouble(split[1])));
+                } else {
+                    areaQb.should(QueryBuilders.rangeQuery("area").gte(Double.parseDouble(split[0])));
+                }
+            }
+            qb.must(areaQb);
+        }
+
+        /*
         其他属性条件
          */
+        qb.must(EsUtils.fieldQuery("cityName", queryParam.getHouseType()));
         qb.must(EsUtils.fieldQuery("houseType", queryParam.getHouseType()));
         qb.must(EsUtils.fieldQuery("layout", queryParam.getLayout()));
         qb.must(EsUtils.fieldQuery("floor", queryParam.getFloor()));
@@ -153,10 +173,19 @@ public class SearchRepositoryImpl implements SearchRepository {
         /*
          设置排序
          */
-        if (StringUtils.isBlank(orderMode) || CommonConstant.SORT_DEFAULT.equals(orderMode)) {
-            requestBuilder.addSort(SortBuilders.scoreSort());
+        if (StringUtils.isBlank(orderMode) || CommonConstant.SORT_DEFAULT_DESC.equals(orderMode)) {
+            requestBuilder.addSort(SortBuilders.scoreSort().order(SortOrder.DESC));
+        } else if (CommonConstant.SORT_DEFAULT_ASC.equals(orderMode)) {
+            requestBuilder.addSort(SortBuilders.scoreSort().order(SortOrder.ASC));
         } else {
-            requestBuilder.addSort(SortBuilders.fieldSort(orderMode).order(SortOrder.DESC)).addSort(SortBuilders.scoreSort());
+            String[] split = orderMode.split("-");
+            FieldSortBuilder sortBuilder = SortBuilders.fieldSort(split[0]);
+            if (split[1].equals("desc")) {
+                sortBuilder.order(SortOrder.DESC);
+            } else {
+                sortBuilder.order(SortOrder.ASC);
+            }
+            requestBuilder.addSort(sortBuilder).addSort(SortBuilders.scoreSort());
         }
         /*
          设置高亮
@@ -188,5 +217,50 @@ public class SearchRepositoryImpl implements SearchRepository {
             houses.add(house);
         }
         return new ServiceMultiResult<>(houses, totalHits);
+    }
+
+    @Override
+    public ServiceResult<List<String>> suggest(String prefix) {
+        CompletionSuggestionBuilder suggestion = SuggestBuilders.completionSuggestion("title.suggest").prefix(prefix).size(10);
+
+        SuggestBuilder suggestBuilder = new SuggestBuilder();
+        suggestBuilder.addSuggestion("autocomplete", suggestion);
+
+        SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).suggest(suggestBuilder);
+
+        log.debug(requestBuilder.toString());
+
+        SearchResponse response = requestBuilder.get();
+        Suggest suggest = response.getSuggest();
+        if (suggest == null) {
+            return ServiceResult.of(new ArrayList<>());
+        }
+        Suggest.Suggestion result = suggest.getSuggestion("autocomplete");
+        int maxSuggest = 0;
+        Set<String> suggestSet = new HashSet<>();
+        for (Object term : result.getEntries()) {
+            if (term instanceof CompletionSuggestion.Entry) {
+                CompletionSuggestion.Entry item = (CompletionSuggestion.Entry) term;
+
+                if (item.getOptions().isEmpty()) {
+                    continue;
+                }
+
+                for (CompletionSuggestion.Entry.Option option : item.getOptions()) {
+                    String tip = option.getText().string();
+                    if (suggestSet.contains(tip)) {
+                        continue;
+                    }
+                    suggestSet.add(tip);
+                    maxSuggest++;
+                }
+            }
+            if (maxSuggest > 5) {
+                break;
+            }
+        }
+        List<String> suggests = Arrays.asList(suggestSet.toArray(new String[]{}));
+
+        return ServiceResult.of(suggests);
     }
 }

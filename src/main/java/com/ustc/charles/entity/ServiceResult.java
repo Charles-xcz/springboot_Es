@@ -1,6 +1,5 @@
 package com.ustc.charles.entity;
 
-import com.ustc.charles.model.SupportAddress;
 import lombok.Data;
 
 /**

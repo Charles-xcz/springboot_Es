@@ -15,9 +15,10 @@ import java.util.List;
 public class QueryParamDto implements Serializable {
     private String keyword;
     private List<String> locals;
+    private List<String> cityName;
     private List<String> price;
     private List<String> houseType;
-    private Double[] area;
+    private List<String> area;
     private List<String> layout;
     private List<String> floor;
     private List<String> design;

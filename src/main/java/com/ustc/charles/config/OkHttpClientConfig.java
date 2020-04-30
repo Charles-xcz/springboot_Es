@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * OkHttpClient：用来调用第三方接口
+ *
  * @author charles
  * @date 2020/3/26 13:58
  */

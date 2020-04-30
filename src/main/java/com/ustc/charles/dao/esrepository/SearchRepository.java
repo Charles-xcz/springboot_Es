@@ -4,6 +4,7 @@ import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
+import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
 
 import java.util.List;
@@ -49,4 +50,6 @@ public interface SearchRepository {
      * @return List<FieldAttribute>
      */
     List<FieldAttributeDto> getFieldAttribute();
+
+    ServiceResult<List<String>> suggest(String prefix);
 }

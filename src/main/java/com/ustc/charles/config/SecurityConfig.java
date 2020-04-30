@@ -1,9 +1,7 @@
 package com.ustc.charles.config;
 
-import com.ustc.charles.security.LoginUrlEntryPoint;
 import com.ustc.charles.entity.CommonConstant;
 import com.ustc.charles.util.CommonUtil;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -34,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                 .anyRequest().permitAll()
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint(urlEntryPoint())
+//                .authenticationEntryPoint(urlEntryPoint())
                 .accessDeniedPage("/403");
 
         //设了一个不存在的登出路径,为了不使用spring security的登出而执行自己完成的登出逻辑
@@ -66,8 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                 });
     }
 
-    @Bean
-    public LoginUrlEntryPoint urlEntryPoint() {
-        return new LoginUrlEntryPoint("/user/login");
-    }
+//    @Bean
+//    public LoginUrlEntryPoint urlEntryPoint() {
+//        return new LoginUrlEntryPoint("/user/login");
+//    }
 }

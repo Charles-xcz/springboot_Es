@@ -1,11 +1,10 @@
 package com.ustc.charles.dto;
 
-import com.ustc.charles.model.HousePicture;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author charles
@@ -16,28 +15,27 @@ public class HouseDto implements Serializable {
     private static final long serialVersionUID = 8918735582286008182L;
     private Long id;
     private String title;
-    private int price;
-    private int area;
-    private int direction;
-    private int room;
-    private int parlour;
-    private int bathroom;
-    private int floor;
-    private Long adminId;
-    private String district;
-    private int totalFloor;
-    private int watchTimes;
-    private int buildYear;
-    private int status;
+    private String url;
+    private String houseType;
+    private String positions;
+    private String longitude;
+    private String latitude;
+    private String layout;
+    private String floor;
+    private Double area;
+    private String design;
+    private String direction;
+    private String decorate;
+    private String lift;
+    private String liftProportion;
+    @JsonProperty("total_price")
+    private Double totalPrice;
+    @JsonProperty("total_price")
+    private Double avgPrice;
+    private String region;
+    private String locals;
+    private String community;
     private Date createTime;
-    private Date lastUpdateTime;
-    private String cityEnName;
-    private String regionEnName;
-    private String street;
-    private String cover;
-    private int distanceToSubway;
-//    private HouseDetail houseDetail;
-    private List<String> tags;
-    private List<HousePicture> pictures;
-    private int subscribeStatus;
+    private Date updateTime;
+    private String status;
 }

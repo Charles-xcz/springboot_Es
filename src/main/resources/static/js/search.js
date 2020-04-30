@@ -2,6 +2,11 @@ var PATH = '/house/search';
 $(function () {
     $(".btn-s").click(hreurl);
     $(".btn-sub").click(submit0);
+    $(document).keydown(function (event) {
+        if (event.keyCode == 13) {
+            $(".btn-sub").click();
+        }
+    });
     $(".btn-order").click(orderBtn);
 });
 
@@ -47,6 +52,7 @@ function submit0() {
     } else {
         param = replaceFragment(search, "keyword=", param);
         param = replaceFragment(param, "current=", "current=1");
+        param = replaceFragment(param, "orderMode=", "orderMode=default-desc");
     }
     param = encodeURI(param);
     location.href = PATH + param;

@@ -1,7 +1,6 @@
 package com.ustc.charles.service;
 
 import com.ustc.charles.dto.DatatableSearch;
-import com.ustc.charles.dto.HouseDto;
 import com.ustc.charles.entity.HouseForm;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
@@ -14,25 +13,16 @@ import com.ustc.charles.model.House;
 public interface HouseService {
     /**
      * 新增
-     *
-     * @param houseForm
-     * @return
      */
-    ServiceResult<HouseDto> save(HouseForm houseForm);
+    ServiceResult<House> save(HouseForm houseForm);
 
-    ServiceMultiResult<HouseDto> adminQuery(DatatableSearch searchBody);
-
-    ServiceResult<HouseDto> findCompleteById(Long houseId);
+    ServiceMultiResult<House> adminQuery(DatatableSearch searchBody);
 
     ServiceResult update(HouseForm houseForm);
 
-    ServiceResult updateCover(Long coverId, Long targetId);
+    ServiceResult deleteHouse(Long id);
 
-    ServiceResult addTag(Long houseId, String tag);
-
-    ServiceResult removeTag(Long houseId, String tag);
-
-    ServiceResult removePhoto(Long id);
 
     ServiceResult<House> findById(Long houseId);
+
 }

@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Properties;
 
 /**
+ * Kaptch配置类：用来生成验证码的小工具
+ *
  * @author charles
  * @date 2020/3/26 11:05
  */
@@ -25,7 +27,6 @@ public class KaptchConfig {
         properties.setProperty("kaptcha.textproducer.char.string", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYAZ");
         properties.setProperty("kaptcha.textproducer.char.length", "4");
         properties.setProperty("kaptcha.noise.impl", "com.google.code.kaptcha.impl.NoNoise");
-
         DefaultKaptcha kaptcha = new DefaultKaptcha();
         Config config = new Config(properties);
         kaptcha.setConfig(config);

@@ -6,6 +6,7 @@ import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
+import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
 import com.ustc.charles.service.EsHouseService;
 import com.ustc.charles.util.RedisKeyUtil;
@@ -56,12 +57,6 @@ public class EsHouseServiceImpl implements EsHouseService {
         return esHouseRepository.count();
     }
 
-
-    @Override
-    public List<House> listByPage(int current, int limit, String sortField) {
-        return searchRepository.listByPage(current, limit, sortField);
-    }
-
     @Override
     public ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, int offset, int limit) {
         return searchRepository.searchHouse(queryParam, orderMode, offset, limit);
@@ -70,16 +65,15 @@ public class EsHouseServiceImpl implements EsHouseService {
     @Override
     public ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String city) {
         String key = RedisKeyUtil.getFieldAggKey(city);
-        List<FieldAttributeDto> fieldAttributes = redisTemplate.opsForList().range(key, 0, -1);
-
-        if (fieldAttributes != null && fieldAttributes.size() != 0) {
-            log.debug("属性聚合:{},", fieldAttributes.size());
-            return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
-        }
-        fieldAttributes = searchRepository.getFieldAttribute();
-
-        redisTemplate.opsForList().rightPushAll(key, fieldAttributes);
-        redisTemplate.expire(key, 3, TimeUnit.HOURS);
+//        List<FieldAttributeDto> fieldAttributes = redisTemplate.opsForList().range(key, 0, -1);
+//
+//        if (fieldAttributes != null && fieldAttributes.size() != 0) {
+//            log.debug("属性聚合:{},", fieldAttributes.size());
+//            return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
+//        }
+        List<FieldAttributeDto> fieldAttributes = searchRepository.getFieldAttribute();
+//        redisTemplate.opsForList().rightPushAll(key, fieldAttributes);
+//        redisTemplate.expire(key, 3, TimeUnit.HOURS);
         return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
     }
 
@@ -88,4 +82,8 @@ public class EsHouseServiceImpl implements EsHouseService {
         return searchRepository.mapAggregate(cityEnName);
     }
 
+    @Override
+    public ServiceResult<List<String>> suggest(String prefix) {
+        return searchRepository.suggest(prefix);
+    }
 }

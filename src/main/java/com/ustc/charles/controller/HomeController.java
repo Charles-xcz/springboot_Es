@@ -15,6 +15,11 @@ public class HomeController {
         return "redirect:/house/search";
     }
 
+    @GetMapping("/admin")
+    public String admin() {
+        return "redirect:/admin/center";
+    }
+
     @GetMapping("/404")
     public String notFoundPage() {
         return "404";

@@ -1,9 +1,6 @@
 package com.ustc.charles.controller;
 
-import com.ustc.charles.dto.FieldAttributeDto;
-import com.ustc.charles.dto.HouseBucketDto;
-import com.ustc.charles.dto.Page;
-import com.ustc.charles.dto.QueryParamDto;
+import com.ustc.charles.dto.*;
 import com.ustc.charles.entity.ServiceMultiResult;
 import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
@@ -14,15 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author charles
@@ -49,12 +43,11 @@ public class HouseController {
     @GetMapping("/search")
     public String searchHouse(QueryParamDto queryParamDTO,
                               Page page, Model model, HttpServletRequest request,
-                              @RequestParam(name = "orderMode", defaultValue = "default") String orderMode) {
+                              @RequestParam(name = "orderMode", defaultValue = "default-desc") String orderMode) {
 
-        String paramString = getParamString(request);
-
-        model.addAttribute("params", paramString);
-
+        Map<String, Set<String>> paramMap = new HashMap<>();
+        String paramString = getParamString(request, paramMap);
+        model.addAttribute("paramMap", paramMap);
         page.setPath("/house/search?" + paramString);
 
         ServiceMultiResult<FieldAttributeDto> fieldAttributes = esHouseService.getFieldAttributes("0");
@@ -71,12 +64,15 @@ public class HouseController {
         return "search";
     }
 
-    private String getParamString(HttpServletRequest request) {
+    private String getParamString(HttpServletRequest request, Map<String, Set<String>> map) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         StringBuilder sb = new StringBuilder();
         for (String key : parameterMap.keySet()) {
             if (!key.equals("current")) {
                 String[] values = parameterMap.get(key);
+                Set<String> set = new HashSet<>();
+                Collections.addAll(set, values);
+                map.put(key, set);
                 for (String value : values) {
                     sb.append(key).append("=").append(value).append("&");
                 }
@@ -87,6 +83,20 @@ public class HouseController {
             s = s.substring(0, s.length() - 1);
         }
         return s;
+    }
+
+    /**
+     * 自动补全接口
+     */
+    @GetMapping("/autocomplete")
+    @ResponseBody
+    public ApiResponse autocomplete(@RequestParam(value = "prefix") String prefix) {
+
+        if (prefix.isEmpty()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+        ServiceResult<List<String>> result = this.esHouseService.suggest(prefix);
+        return ApiResponse.ofSuccess(result.getResult());
     }
 
     @GetMapping("/map")
@@ -109,5 +119,6 @@ public class HouseController {
         model.addAttribute("regions", regions.getResult());
         return "rent-map";
     }
+
 
 }

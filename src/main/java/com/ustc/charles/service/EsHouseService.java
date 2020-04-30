@@ -4,6 +4,7 @@ import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
 import com.ustc.charles.entity.ServiceMultiResult;
+import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
 
 import java.util.List;
@@ -23,11 +24,11 @@ public interface EsHouseService {
 
     long getCount();
 
-    List<House> listByPage(int current, int limit, String sortField);
-
     ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, int offset, int limit);
 
     ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String city);
 
     ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName);
+
+    ServiceResult<List<String>> suggest(String prefix);
 }

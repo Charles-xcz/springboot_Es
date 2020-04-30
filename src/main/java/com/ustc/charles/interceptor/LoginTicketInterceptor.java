@@ -1,13 +1,14 @@
 package com.ustc.charles.interceptor;
 
+import com.ustc.charles.entity.HostHolder;
 import com.ustc.charles.entity.LoginTicket;
 import com.ustc.charles.model.User;
 import com.ustc.charles.service.impl.UserServiceImpl;
 import com.ustc.charles.util.CommonUtil;
-import com.ustc.charles.entity.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
@@ -45,12 +46,12 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 // 在本次请求中持有用户
                 hostHolder.setUser(user);
                 // 构建用户认证的结果,并存入SecurityContext,以便于Security进行授权.
-                Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        user, user.getPassword(), userService.getAuthorities(user.getId()));
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), userService.getAuthorities(user.getId()));
+                SecurityContext context = SecurityContextHolder.getContext();
                 SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
+                context.getAuthentication();
             }
         }
-
         return true;
     }
 
@@ -65,6 +66,6 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         hostHolder.clear();
-        SecurityContextHolder.clearContext();
+//        SecurityContextHolder.clearContext();
     }
 }

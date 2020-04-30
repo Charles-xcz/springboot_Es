@@ -28,7 +28,6 @@ public class LoginUrlEntryPoint extends LoginUrlAuthenticationEntryPoint {
     public LoginUrlEntryPoint(String loginFormUrl) {
         super(loginFormUrl);
         authEntryPointMap = new HashMap<>();
-
         // 普通用户登录入口映射
         authEntryPointMap.put("/user/**", "/user/login");
         // 管理员登录入口映射
@@ -37,11 +36,6 @@ public class LoginUrlEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
     /**
      * 根据请求跳转到指定的页面，父类是默认使用loginFormUrl
-     *
-     * @param request
-     * @param response
-     * @param exception
-     * @return
      */
     @Override
     protected String determineUrlToUseForThisRequest(HttpServletRequest request, HttpServletResponse response,
@@ -58,12 +52,6 @@ public class LoginUrlEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
     /**
      * 如果是Api接口 返回json数据 否则按照一般流程处理
-     *
-     * @param request
-     * @param response
-     * @param authException
-     * @throws IOException
-     * @throws ServletException
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,

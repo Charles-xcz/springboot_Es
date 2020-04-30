@@ -1,13 +1,13 @@
 // 【关键】数据显示控制 服务器分页
 var table = $('#data-table').DataTable({
-    "order": [[7, "desc"]],//默认创建时间排序
+    "order": [[0, "asc"]],//默认创建时间排序
     "pageLength": 10, // 配置单页显示条数
     "paging": true, // 关闭本地分页
     "lengthChange": true, // 不允许用户改变表格每页显示的记录数
     "searching": false, // 不允许Datatables开启本地搜索
     "ordering": true, // 启用Datatables排序
     "info": true, // 表格左边显示搜索信息
-    "autoWidth": true, // 自动计算表格宽度
+    "autoWidth": false, // 自动计算表格宽度
     "stateSave": false, // 允许表格缓存Datatables，以便下次恢复之前的状态
     "retrieve": true, // 如果已经初始化了，则继续使用之前的Datatables实例
     "processing": true, // 显示正在处理的状态
@@ -40,87 +40,99 @@ var table = $('#data-table').DataTable({
         data: "id",
     }, {
         data: "title",
-        searchable: false // 通过全局搜索框搜索标题
-    }, {
-        data: "cover",
-        searchable: false,
-        orderable: false
-    }, {
-        data: "area",
-    }, {
-        data: "price",
-    }, {
-        data: "floor",
-    }, {
-        data: "watchTimes",
-    }, {
-        data: "createTime"
-    }, {
-        data: "status",
-        orderable: false
-    }, {
-        data: null
-    }],
+        orderable: false,
+        searchable: true // 通过全局搜索框搜索标题
+    },
+        //     {
+        //     data: "cover",
+        //     searchable: false,
+        //     orderable: false
+        // },
+        {
+            data: "area",
+        }, {
+            data: "totalPrice",
+        }, {
+            data: "floor",
+            orderable: false,
+        },
+        //     {
+        //     data: "watchTimes",
+        // },
+        {
+            data: "createTime"
+        },
+        //     {
+        //     data: "status",
+        //     orderable: false
+        // },
+        {
+            data: null
+        }],
     columnDefs: [{ // 定义表格样式
         targets: 0,
         render: function (data, type, row, meta) {
             return '<td class="text-l"><u style="cursor:pointer" class="text-primary"' +
-                'onClick="house_edit(\'查看\', \'/admin/house/show?id=' + data + '\')" title="查看">' + data + '</u></td>';
+                'onClick="house_edit(\'查看\',\'' + row.url + '\')" title="查看">' + data + '</u></td>';
         }
     }, {
         targets: 1,
         render: function (data, type, row, meta) {
             return '<td class="text-l"><u style="cursor:pointer" class="text-primary"' +
-                'onClick="house_edit(\'查看\', \'/admin/house/show?id=' + row.id + '\')" title="查看">' + data + '</u></td>';
+                'onClick="house_edit(\'查看\',\'' + row.url + '\')" title="查看">' + data + '</u></td>';
         }
-    }, {
-        targets: 2,
-        render: function (data, type, row, meta) {
-            return '<td><img onClick="house_edit(\'查看\', \'/admin/house/show?id=' + row.id + '\')" title="查看"' +
-                ' class="picture-thumb" src="' + data + '?imageView2/1/w/200/h/100"></td>';
-        }
-    }, {
-        targets: 7,
-        render: function (data, type, row, meta) {
-            return (new Date(data)).Format("yyyy-MM-dd hh:mm:ss");
-        }
-    }, {
-        targets: 8,
-        render: function (data, type, row, meta) {
-            var html = '';
-            if (data === 0) {
-                html = '<td class="td-status"><span class="label label-danger radius">待审核</span></td>';
-            } else if (data === 1) {
-                html = '<td class="td-status"><span class="label label-success radius">已发布</span></td>';
-            } else if (data === 2) {
-                html = '<td class="td-status"><span class="label label-warning radius">已出租</span></td>';
-            } else {
-                html = '<td class="td-status"><span class="label label-danger radius">未知状态</span></td>';
+    },
+        //     {
+        //     targets: 2,
+        //     render: function (data, type, row, meta) {
+        //         return '<td><img onClick="house_edit(\'查看\', \'/admin/house/show?id=' + row.id + '\')" title="查看"' +
+        //             ' class="picture-thumb" src="' + data + '?imageView2/1/w/200/h/100"></td>';
+        //     }
+        // },
+        {
+            targets: 5,
+            render: function (data, type, row, meta) {
+                return (new Date(data)).Format("yyyy-MM-dd hh:mm:ss");
             }
-            return html;
-        }
-    }, {
-        targets: 9,
-        render: function (data, type, row, meta) {
-            var prefix = '<td class="f-14 td-manage">',
-                data_status = row.status,
-                content = '',
-                suffix = '<a style="text-decoration:none" class="ml-5"' +
-                    ' onClick="house_edit(\'房源编辑\', \'/admin/house/edit?id=' + row.id + '\')" href="javascript:;"' +
-                    ' title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a> <a style="text-decoration:none" class="ml-5"' +
-                    ' onClick="house_del(this, ' + row.id + ')" href="javascript:;" title="删除"><i' +
-                    ' class="Hui-iconfont">&#xe6e2;</i></a></td>';
-            if (data_status === 0) { // 待审核
-                content = '<a style="text-decoration:none" onClick="house_pass(this,' + row.id + ')"' +
-                    ' href="javascript:;" title="发布">发布</a>&nbsp;';
-            } else if (data_status === 1) { // 已发布
-                content = '<a style="text-decoration:none" onClick="house_stop(this,' + row.id + ')"' +
-                    ' href="javascript:;" title="下架"><i class="Hui-iconfont">&#xe6de;</i></a>&nbsp;'
-            }
+        },
+        //     {
+        //     targets: 7,
+        //     render: function (data, type, row, meta) {
+        //         var html = '';
+        //         if (data === 0) {
+        //             html = '<td class="td-status"><span class="label label-danger radius">待审核</span></td>';
+        //         } else if (data === 1) {
+        //             html = '<td class="td-status"><span class="label label-success radius">已发布</span></td>';
+        //         } else if (data === 2) {
+        //             html = '<td class="td-status"><span class="label label-warning radius">已出租</span></td>';
+        //         } else {
+        //             html = '<td class="td-status"><span class="label label-danger radius">未知状态</span></td>';
+        //         }
+        //         return html;
+        //     }
+        // },
+        {
+            targets: 6,
+            render: function (data, type, row, meta) {
+                var prefix = '<td class="f-14 td-manage">',
+                    data_status = row.status,
+                    content = '',
+                    suffix = '<a style="text-decoration:none" class="ml-5"' +
+                        ' onClick="house_edit(\'房源编辑\', \'/admin/house/edit?id=' + row.id + '\')" href="javascript:;"' +
+                        ' title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a> <a style="text-decoration:none" class="ml-5"' +
+                        ' onClick="house_del(this, ' + row.id + ')" href="javascript:;" title="删除"><i' +
+                        ' class="Hui-iconfont">&#xe6e2;</i></a></td>';
+                if (data_status === 0) { // 待审核
+                    content = '<a style="text-decoration:none" onClick="house_pass(this,' + row.id + ')"' +
+                        ' href="javascript:;" title="发布">发布</a>&nbsp;';
+                } else if (data_status === 1) { // 已发布
+                    content = '<a style="text-decoration:none" onClick="house_stop(this,' + row.id + ')"' +
+                        ' href="javascript:;" title="下架"><i class="Hui-iconfont">&#xe6de;</i></a>&nbsp;'
+                }
 
-            return prefix + content + suffix;
-        }
-    }],
+                return prefix + content + suffix;
+            }
+        }],
     ajax: {
         type: "POST",
         url: "/admin/houses", // 服务器url
@@ -132,9 +144,9 @@ var table = $('#data-table').DataTable({
                 createTimeMax = $('#createTimeMax').val(),
                 city = $('#city').val(),
                 title = $('#houseTitle').val();
-            if (houseStatus.length > 0) {
-                postData.status = houseStatus;
-            }
+            // if (houseStatus.length > 0) {
+            //     postData.status = houseStatus;
+            // }
             if (city.length > 0) {
                 postData.city = city;
             }
@@ -196,7 +208,7 @@ function house_edit(title, url) {
 function house_del(obj, id) {
     layer.confirm('确认要删除吗？', function (index) {
         $.ajax({
-            type: 'PUT',
+            type: 'GET',
             url: '/admin/house/operate/' + id + '/' + '3',
             success: function (data) {
                 if (data.code === 200) {
@@ -221,7 +233,7 @@ function house_del(obj, id) {
 function house_stop(obj, id) {
     layer.confirm('确认要下架吗？', function (index) {
         $.ajax({
-            type: 'PUT',
+            type: 'GET',
             url: '/admin/house/operate/' + id + '/' + '2',
             success: function (data) {
                 if (data.code === 200) {
@@ -249,7 +261,7 @@ function house_stop(obj, id) {
 function house_pass(obj, id) {
     layer.confirm('确认要发布吗？', function (index) {
         $.ajax({
-            type: 'PUT',
+            type: 'GET',
             url: '/admin/house/operate/' + id + '/' + '1',
             success: function (data) {
                 if (data.code === 200) {

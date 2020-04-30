@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
  * @author charles
  */
 //@Configuration
+@Deprecated
 public class ElasticSearchConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchConfig.class);

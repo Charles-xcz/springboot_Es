@@ -5,7 +5,7 @@
 <mapper namespace="com.ustc.charles.dao.mapper.HouseMapper">
 
     <sql id="selectFields">
-        id,url, title, house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
+        id,url, title, city_name,house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time,register_time
     </sql>
     <sql id="insertFields">
         title,house_type, positions, longitude, latitude, layout, floor, area, design, direction, decorate, lift, lift_proportion, total_price, avg_price, region, locals, community, create_time, update_time
@@ -50,6 +50,11 @@
         set cover=#{path}
         where id = #{houseId}
     </update>
+    <delete id="delete">
+        delete
+        from ershoufang_lianjia
+        where id = #{id}
+    </delete>
 
     <!--    <sql id="insertFields">-->
     <!--        user_id, entity_type, entity_id, target_id, content, status, create_time-->

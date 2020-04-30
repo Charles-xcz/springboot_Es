@@ -3,6 +3,7 @@ package com.ustc.charles.service;
 import com.ustc.charles.EsApplicationTests;
 import com.ustc.charles.dao.esrepository.EsHouseRepository;
 import com.ustc.charles.dao.mapper.HouseMapper;
+import com.ustc.charles.model.House;
 import com.ustc.charles.util.EsUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -32,7 +33,9 @@ public class EsServiceTest extends EsApplicationTests {
 
     @Test
     void testSaveAll() {
-        esHouseRepository.saveAll(houseMapper.selectHouses());
+        List<House> houses = houseMapper.selectHouses();
+        esHouseRepository.saveAll(houses);
+
     }
 
     @Test

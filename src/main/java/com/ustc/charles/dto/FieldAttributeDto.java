@@ -17,6 +17,7 @@ public class FieldAttributeDto {
     public static final Map<String, String> FIELD_TO_NAME = new HashMap<>();
 
     static {
+        FIELD_TO_NAME.put("cityName", "城市");
         FIELD_TO_NAME.put("houseType", "类型");
         FIELD_TO_NAME.put("layout", "布局");
         FIELD_TO_NAME.put("floor", "楼层");
