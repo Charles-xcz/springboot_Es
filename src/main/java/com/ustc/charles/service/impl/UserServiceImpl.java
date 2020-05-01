@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -153,7 +154,6 @@ public class UserServiceImpl implements UserService, CommonConstant {
         loginTicket.setTicket(CommonUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
-
         String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
         redisTemplate.opsForValue().set(redisKey, loginTicket);
 
@@ -172,7 +172,8 @@ public class UserServiceImpl implements UserService, CommonConstant {
     @Override
     public LoginTicket findLoginTicket(String ticket) {
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
-        return (LoginTicket) redisTemplate.opsForValue().get(redisKey);
+        Object o = redisTemplate.opsForValue().get(redisKey);
+        return JSON.parseObject(JSON.toJSONString(o), LoginTicket.class);
     }
 
     @Override
@@ -195,7 +196,7 @@ public class UserServiceImpl implements UserService, CommonConstant {
      */
     private User getCache(int userId) {
         String redisKey = RedisKeyUtil.getUserKey(userId);
-        return (User) redisTemplate.opsForValue().get(redisKey);
+        return JSON.parseObject(JSON.toJSONString(redisTemplate.opsForValue().get(redisKey)), User.class);
     }
 
     /**
@@ -219,21 +220,5 @@ public class UserServiceImpl implements UserService, CommonConstant {
     private void clearCache(int userId) {
         String redisKey = RedisKeyUtil.getUserKey(userId);
         redisTemplate.delete(redisKey);
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
-        User user = this.findUserById(userId).getResult();
-        List<GrantedAuthority> list = new ArrayList<>();
-        list.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                if (user.getType() == 1) {
-                    return AUTHORITY_ADMIN;
-                }
-                return AUTHORITY_USER;
-            }
-        });
-        return list;
     }
 }

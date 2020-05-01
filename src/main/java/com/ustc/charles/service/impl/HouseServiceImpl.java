@@ -46,18 +46,6 @@ public class HouseServiceImpl implements HouseService {
         return new ServiceResult<>(true, null, house);
     }
 
-    @Override
-    public ServiceMultiResult<House> adminQuery(DatatableSearch searchBody) {
-        if ("createTime".equals(searchBody.getOrderBy())) {
-            searchBody.setOrderBy("create_time");
-        } else if ("totalPrice".equals(searchBody.getOrderBy())) {
-            searchBody.setOrderBy("total_Price");
-        }
-        List<House> houses = houseMapper.findHouses(searchBody);
-        int total = houseMapper.findHousesCount(searchBody);
-        return new ServiceMultiResult<>(houses, total);
-    }
-
     @Transactional
     @Override
     public ServiceResult update(HouseForm houseForm) {
@@ -76,10 +64,13 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public ServiceResult deleteHouse(Long id) {
-        houseMapper.delete(id);
-        EventMessage message = new EventMessage<>().setTopic(EventMessage.TOPIC_REMOVE).setHouseId(id);
-        eventProducer.fireEvent(message);
-        return ServiceResult.success();
+        if (houseMapper.delete(id)) {
+            EventMessage message = new EventMessage<>().setTopic(EventMessage.TOPIC_REMOVE).setHouseId(id);
+            eventProducer.fireEvent(message);
+            return ServiceResult.success();
+        } else {
+            return ServiceResult.notFound();
+        }
     }
 
 

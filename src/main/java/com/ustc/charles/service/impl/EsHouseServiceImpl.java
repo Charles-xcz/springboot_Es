@@ -2,6 +2,7 @@ package com.ustc.charles.service.impl;
 
 import com.ustc.charles.dao.esrepository.EsHouseRepository;
 import com.ustc.charles.dao.esrepository.SearchRepository;
+import com.ustc.charles.dto.DatatableSearch;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
@@ -63,15 +64,20 @@ public class EsHouseServiceImpl implements EsHouseService {
     }
 
     @Override
-    public ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String city) {
-        String key = RedisKeyUtil.getFieldAggKey(city);
+    public ServiceMultiResult<House> adminQuery(DatatableSearch searchBody) {
+        return searchRepository.adminQueryHouse(searchBody);
+    }
+
+    @Override
+    public ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String cityName) {
+        String key = RedisKeyUtil.getFieldAggKey(cityName);
 //        List<FieldAttributeDto> fieldAttributes = redisTemplate.opsForList().range(key, 0, -1);
 //
 //        if (fieldAttributes != null && fieldAttributes.size() != 0) {
 //            log.debug("属性聚合:{},", fieldAttributes.size());
 //            return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
 //        }
-        List<FieldAttributeDto> fieldAttributes = searchRepository.getFieldAttribute();
+        List<FieldAttributeDto> fieldAttributes = searchRepository.getFieldAttribute(cityName);
 //        redisTemplate.opsForList().rightPushAll(key, fieldAttributes);
 //        redisTemplate.expire(key, 3, TimeUnit.HOURS);
         return new ServiceMultiResult<>(fieldAttributes, fieldAttributes.size());
@@ -83,7 +89,7 @@ public class EsHouseServiceImpl implements EsHouseService {
     }
 
     @Override
-    public ServiceResult<List<String>> suggest(String prefix) {
-        return searchRepository.suggest(prefix);
+    public ServiceResult<List<String>> suggest(String prefix, String cityName) {
+        return searchRepository.suggest(prefix, cityName);
     }
 }

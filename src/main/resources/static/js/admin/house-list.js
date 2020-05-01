@@ -118,8 +118,9 @@ var table = $('#data-table').DataTable({
                     data_status = row.status,
                     content = '',
                     suffix = '<a style="text-decoration:none" class="ml-5"' +
-                        ' onClick="house_edit(\'房源编辑\', \'/admin/house/edit?id=' + row.id + '\')" href="javascript:;"' +
-                        ' title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a> <a style="text-decoration:none" class="ml-5"' +
+                        // ' onClick="house_edit(\'房源编辑\', \'/admin/house/edit?id=' + row.id + '\')" href="javascript:;"' +
+                        // ' title="编辑"><i class="Hui-iconfont">&#xe6df;</i>' +
+                        // '</a> <a style="text-decoration:none" class="ml-5"' +
                         ' onClick="house_del(this, ' + row.id + ')" href="javascript:;" title="删除"><i' +
                         ' class="Hui-iconfont">&#xe6e2;</i></a></td>';
                 if (data_status === 0) { // 待审核
@@ -171,7 +172,6 @@ var table = $('#data-table').DataTable({
 
 $(function () {
     var $city = $("#city");
-
     // 城市绑定
     $.get('/address/support/cities', function (data, status) {
         if (status !== 'success' || data.code !== 200) {
@@ -180,11 +180,10 @@ $(function () {
         }
         var str = '';
         $.each(data.data, function (i, item) {
-            str += "<option value=" + item.en_name + ">" + item.cn_name + "</option>";
+            str += "<option value=" + item.cn_name + ">" + item.cn_name + "</option>";
         });
         $city.append(str);
     });
-
 });
 
 $('#houseSearch').on('click', null, function () {

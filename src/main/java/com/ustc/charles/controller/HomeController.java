@@ -12,7 +12,7 @@ public class HomeController {
 
     @GetMapping({"/", "/index"})
     public String root() {
-        return "redirect:/house/search";
+        return "index";
     }
 
     @GetMapping("/admin")
@@ -32,11 +32,11 @@ public class HomeController {
 
     @GetMapping("/500")
     public String internalError() {
-        return "500";
+        return "error";
     }
 
     @GetMapping("/error")
     public String error() {
-        return "500";
+        return "error";
     }
 }

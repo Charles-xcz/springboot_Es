@@ -13,9 +13,11 @@ import java.util.List;
  */
 @Data
 public class QueryParamDto implements Serializable {
+    private String cityName = "苏州";
     private String keyword;
+    private List<String> region;
     private List<String> locals;
-    private List<String> cityName;
+    private List<String> community;
     private List<String> price;
     private List<String> houseType;
     private List<String> area;
@@ -25,6 +27,4 @@ public class QueryParamDto implements Serializable {
     private List<String> decorate;
     private List<String> lift;
     private List<String> liftProportion;
-    private List<String> region;
-    private List<String> community;
 }

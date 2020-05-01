@@ -31,5 +31,5 @@ public interface HouseMapper {
 
     int updateCover(Long houseId, String path);
 
-    long delete(Long id);
+    boolean delete(Long id);
 }

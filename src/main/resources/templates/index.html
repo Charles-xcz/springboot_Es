@@ -1,0 +1,174 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta http-equiv="Content-language" content="zh-CN"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="pc">
+    <title>搜房</title>
+    <meta name="description" content="搜房"/>
+    <meta name="keywords" content="搜房"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/global.css}"/>
+    <link th:href="@{/css/main.css}" rel='stylesheet' type='text/css'/>
+    <link th:href="@{/css/list.css}" rel='stylesheet' type='text/css'/>
+    <link th:href="@{/lib/layui/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/lib/jquery-ui-1.12.1/jquery-ui.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/index.css}" rel='stylesheet' type='text/css'/>
+</head>
+<body>
+
+<div class="nk-container">
+    <!--头部-->
+    <header th:replace="search :: header"></header>
+    <!-- 内容 -->
+    <div class="main">
+        <div class="container">
+            <div class="city-change animated bounceIn" style="display: block;">
+                <span class="close"></span>
+                <div class="title">选择城市
+                    <span class="city-tab">
+                        <span class="code1">热门城市:</span>
+                        <a href="/house/search?cityName=北京" title="北京租房">北京</a>
+                        <a href="/house/search?cityName=上海" title="上海租房">上海</a>
+                        <a href="/house/search?cityName=苏州" title="苏州租房">苏州</a>
+                    </span>
+                </div>
+                <div class="title-line"></div>
+                <div class="fc-main clear">
+                    <div class="fl citys-l">
+                        <ul>
+                            <li class="clear"><span class="code-title fl">B</span>
+                                <a href="/house/search?cityName=北京" title="北京租房">北京</a>
+                            </li>
+                            <!--                <li class="clear"><span class="code-title fl">C</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=cd" title="成都租房">成都</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=cq" title="重庆租房">重庆</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=cs" title="长沙租房">长沙</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear"><span class="code-title fl">D</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=dl" title="大连租房">大连</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=dg" title="东莞租房">东莞</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear"><span class="code-title fl">F</span>-->
+                            <!--                    <div class="city-enum fl"><a href="/rent/house?cityEnName=fs" title="佛山租房">佛山</a></div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear"><span class="code-title fl">G</span>-->
+                            <!--                    <div class="city-enum fl"><a href="/rent/house?cityEnName=gz" title="广州租房">广州</a></div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear"><span class="code-title fl">H</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=hz" title="杭州租房">杭州</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=hui" title="惠州租房">惠州</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=hk" title="海口租房">海口</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=hf" title="合肥租房">合肥</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                        </ul>
+                    </div>
+                    <div class="fl citys-r">
+                        <ul>
+                            <!--                <li class="clear">-->
+                            <!--                    <span class="code-title fl">L</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=ls" title="陵水租房">陵水</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=lf" title="廊坊租房">廊坊</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear">-->
+                            <!--                    <span class="code-title fl">N</span>-->
+                            <!--                    <div class="city-enum fl"><a href="/rent/house?cityEnName=nj" title="南京租房">南京</a></div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear">-->
+                            <!--                    <span class="code-title fl">Q</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=qd" title="青岛租房">青岛</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=qh" title="琼海租房">琼海</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                            <li class="clear">
+                                <span class="code-title fl">S</span>
+                                <div class="city-enum fl">
+                                    <a href="/house/search?cityName=上海" title="上海租房">上海</a>
+                                    <a href="/house/search?cityName=苏州" title="苏州租房">苏州</a>
+                                </div>
+                            </li>
+                            <!--                <li class="clear">-->
+                            <!--                    <span class="code-title fl">T</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=tj" title="天津租房">天津</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=ty" title="太原租房">太原</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear">-->
+                            <!--                    <span class="code-title fl">W</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=wh" title="武汉租房">武汉</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=wx" title="无锡租房">无锡</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=wc" title="文昌租房">文昌</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=wn" title="万宁租房">万宁</a>-->
+                            <!--                    </div>-->
+                            <!--                </li>-->
+                            <!--                <li class="clear">-->
+                            <!--                    <span class="code-title fl">X</span>-->
+                            <!--                    <div class="city-enum fl">-->
+                            <!--                        <a href="/rent/house?cityEnName=xm" title="厦门租房">厦门</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=xa" title="西安租房">西安</a>-->
+                            <!--                        <a href="/rent/house?cityEnName=xsbn" title="西双版纳租房">西双版纳</a></div>-->
+                            <!--                </li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 尾部 -->
+    <footer class="bg-dark" th:fragment="footer">
+    </footer>
+</div>
+<script th:src="@{/js/jquery-3.4.1.min.js}" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        crossorigin="anonymous"></script>
+<script th:src="@{/js/bootstrap.min.js}" crossorigin="anonymous"></script>
+<script th:src="@{/js/global.js}"></script>
+<script th:src="@{/js/index.js}"></script>
+<script th:src="@{/js/search.js}"></script>
+<script type="text/javascript" th:src="@{/lib/jquery-ui-1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/lib/layui/layui.js}" type="text/javascript"></script>
+<script th:inline="javascript" type="text/javascript">
+    $(function () {
+        $('.xunwu-header .index-page').addClass('on');
+
+        function msgTip(content) {
+            layer.open({
+                type: 1,
+                offset: '100px',
+                area: ['420px', '240px'],
+                skin: 'layui-layer-lan', //样式类名
+                closeBtn: 1, //显示关闭按钮
+                anim: 2,
+                shadeClose: true, //开启遮罩关闭
+                content: content,
+                time: 2000
+            });
+        }
+
+        var msg = [[${msg}]];
+        if (msg === 'must_chose_city') {
+            msgTip('<p class="msgTip">你必须选择一个城市</p>');
+        } else if (msg === 'not_support_city') {
+            msgTip('<p class="msgTip">暂不支持所选城市</p>');
+        } else {
+            // TODO
+        }
+    });
+</script>
+</body>
+</html>

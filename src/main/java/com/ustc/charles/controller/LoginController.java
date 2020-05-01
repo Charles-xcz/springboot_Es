@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -93,9 +94,9 @@ public class LoginController implements CommonConstant {
         }
     }
 
-    @PostMapping("/login")
+//    @PostMapping("/toLogin")
     public String login(String username, String password, String code, boolean rememberme,
-                        Model model, HttpServletResponse response,
+                        Model model, HttpServletRequest request,
                         @CookieValue("kaptchaOwner") String kaptchaOwner) {
         // 检查验证码
         String kaptcha = null;
@@ -108,21 +109,7 @@ public class LoginController implements CommonConstant {
             model.addAttribute("codeMsg", "验证码不正确!");
             return "site/login";
         }
-
-        // 检查账号,密码
-        int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
-        Map<String, Object> map = userService.login(username, password, expiredSeconds);
-        if (map.containsKey("ticket")) {
-            Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
-            cookie.setPath("/");
-            cookie.setMaxAge(expiredSeconds);
-            response.addCookie(cookie);
-            return "redirect:/index";
-        } else {
-            model.addAttribute("usernameMsg", map.get("usernameMsg"));
-            model.addAttribute("passwordMsg", map.get("passwordMsg"));
-            return "/site/login";
-        }
+        return "forward:/login";
     }
 
     @GetMapping("/logout")

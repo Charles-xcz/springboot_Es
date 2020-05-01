@@ -23,7 +23,7 @@ import java.util.Date;
  * @author charles
  * @date 2020/3/26 10:18
  */
-@Component
+//@Component
 public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
     private UserServiceImpl userService;
@@ -46,10 +46,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 // 在本次请求中持有用户
                 hostHolder.setUser(user);
                 // 构建用户认证的结果,并存入SecurityContext,以便于Security进行授权.
-                Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), userService.getAuthorities(user.getId()));
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(),user.getAuthorities());
                 SecurityContext context = SecurityContextHolder.getContext();
                 SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
-                context.getAuthentication();
             }
         }
         return true;
@@ -58,6 +57,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         User user = hostHolder.getUser();
+        SecurityContextHolder.getContext().getAuthentication();
         if (user != null && modelAndView != null) {
             modelAndView.addObject("loginUser", user);
         }
@@ -66,6 +66,6 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         hostHolder.clear();
-//        SecurityContextHolder.clearContext();
+        SecurityContextHolder.clearContext();
     }
 }

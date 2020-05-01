@@ -13,7 +13,6 @@ import java.util.Map;
  * @date 2020/4/23 14:24
  */
 public interface UserService {
-
     ServiceResult<User> findUserById(int id);
 
     Map<String, Object> register(User user);
@@ -27,6 +26,4 @@ public interface UserService {
     User findUserByName(String username);
 
     int updateHeader(int userId, String headerUrl);
-
-    Collection<? extends GrantedAuthority> getAuthorities(int userId);
 }

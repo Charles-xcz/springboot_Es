@@ -50,7 +50,7 @@ public class HouseController {
         model.addAttribute("paramMap", paramMap);
         page.setPath("/house/search?" + paramString);
 
-        ServiceMultiResult<FieldAttributeDto> fieldAttributes = esHouseService.getFieldAttributes("0");
+        ServiceMultiResult<FieldAttributeDto> fieldAttributes = esHouseService.getFieldAttributes(queryParamDTO.getCityName());
         model.addAttribute("fieldAttributes", fieldAttributes.getResult());
 
         ServiceMultiResult<House> result = esHouseService.searchHouse(queryParamDTO, orderMode, page.getOffset(), page.getLimit());
@@ -60,6 +60,7 @@ public class HouseController {
         model.addAttribute("totalHits", result.getTotal());
         model.addAttribute("page", page);
         model.addAttribute("orderMode", orderMode);
+        model.addAttribute("cityName", queryParamDTO.getCityName());
         model.addAttribute("keyword", queryParamDTO.getKeyword());
         return "search";
     }
@@ -90,12 +91,12 @@ public class HouseController {
      */
     @GetMapping("/autocomplete")
     @ResponseBody
-    public ApiResponse autocomplete(@RequestParam(value = "prefix") String prefix) {
+    public ApiResponse autocomplete(@RequestParam(value = "prefix") String prefix, @RequestParam(value = "cityName") String cityName) {
 
         if (prefix.isEmpty()) {
             return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
         }
-        ServiceResult<List<String>> result = this.esHouseService.suggest(prefix);
+        ServiceResult<List<String>> result = esHouseService.suggest(prefix, cityName);
         return ApiResponse.ofSuccess(result.getResult());
     }
 

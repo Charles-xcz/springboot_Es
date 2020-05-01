@@ -40,7 +40,9 @@ spring:
       cluster-name: charles
       cluster-nodes: localhost:9300
 
-    #redis
+  session:
+    store-type: redis
+  #redis
   redis:
     database: 10
     host: localhost
@@ -64,19 +66,6 @@ mybatis:
     map-underscore-to-camel-case: true
     use-generated-keys: true
 
-# community
-house-search:
-  path:
-    domain: http://localhost:${server.port}
-    # 上传文件的保存路径
-    upload: D:/Study/Engineering_pratice/data/upload
-
-#wk
-wk:
-  image:
-    command: d:/develop/wkhtmltopdf/bin/wkhtmltoimage
-    storage: D:/Study/Engineering_pratice/data/wk-images
-
 #七牛
 qiniu:
   key:
@@ -86,8 +75,14 @@ qiniu:
     name: house-search
     url: http://q7szflboi.bkt.clouddn.com/
 
-#caffeine
-caffeine:
-  posts:
-    maxSize: 15
-    expire-seconds: 180
+##caffeine
+#caffeine:
+#  posts:
+#    maxSize: 15
+#    expire-seconds: 180
+
+#wk
+#wk:
+#  image:
+#    command: d:/develop/wkhtmltopdf/bin/wkhtmltoimage
+#    storage: D:/Study/Engineering_pratice/data/wk-images

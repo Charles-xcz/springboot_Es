@@ -1,5 +1,6 @@
 package com.ustc.charles.dao.esrepository;
 
+import com.ustc.charles.dto.DatatableSearch;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
@@ -20,17 +21,6 @@ public interface SearchRepository {
 
     ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName);
 
-    /**
-     * 分页查询所有房屋信息,根据字段field排序
-     *
-     * @param currentPage 当前页
-     * @param pageSize    每页信息条数
-     * @param sortMode    排序字段
-     * @return List<House>
-     */
-    List<House> listByPage(Integer currentPage, Integer pageSize, String sortMode);
-
-
     House getById(String id);
 
     /**
@@ -43,13 +33,12 @@ public interface SearchRepository {
      */
     ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, Integer currentPage, Integer pageSize);
 
+    ServiceMultiResult<House> adminQueryHouse(DatatableSearch searchBody);
 
     /**
      * 获取字段属性
-     *
-     * @return List<FieldAttribute>
      */
-    List<FieldAttributeDto> getFieldAttribute();
+    List<FieldAttributeDto> getFieldAttribute(String cityName);
 
-    ServiceResult<List<String>> suggest(String prefix);
+    ServiceResult<List<String>> suggest(String prefix, String cityName);
 }

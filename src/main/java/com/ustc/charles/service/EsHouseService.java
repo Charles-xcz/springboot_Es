@@ -1,5 +1,6 @@
 package com.ustc.charles.service;
 
+import com.ustc.charles.dto.DatatableSearch;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
@@ -26,9 +27,11 @@ public interface EsHouseService {
 
     ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, int offset, int limit);
 
+    ServiceMultiResult<House> adminQuery(DatatableSearch searchBody);
+
     ServiceMultiResult<FieldAttributeDto> getFieldAttributes(String city);
 
     ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName);
 
-    ServiceResult<List<String>> suggest(String prefix);
+    ServiceResult<List<String>> suggest(String prefix, String cityName);
 }

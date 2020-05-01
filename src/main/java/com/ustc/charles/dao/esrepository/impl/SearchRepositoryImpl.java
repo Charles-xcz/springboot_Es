@@ -2,6 +2,7 @@ package com.ustc.charles.dao.esrepository.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ustc.charles.dao.esrepository.SearchRepository;
+import com.ustc.charles.dto.DatatableSearch;
 import com.ustc.charles.dto.FieldAttributeDto;
 import com.ustc.charles.dto.HouseBucketDto;
 import com.ustc.charles.dto.QueryParamDto;
@@ -12,21 +13,28 @@ import com.ustc.charles.model.House;
 import com.ustc.charles.util.EsUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.SortBy;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
@@ -37,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author charles
@@ -54,13 +63,15 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String type;
 
     @Override
-    public List<FieldAttributeDto> getFieldAttribute() {
+    public List<FieldAttributeDto> getFieldAttribute(String cityName) {
         List<FieldAttributeDto> fieldAttributes = new ArrayList<>();
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type);
-        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "cityName"));
-        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "houseType"));
+        searchRequestBuilder.setQuery(QueryBuilders.boolQuery().filter(QueryBuilders.termQuery("cityName", cityName)));
+
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "region"));
+        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "locals"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "community"));
+        fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "houseType"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "floor"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "layout"));
         fieldAttributes.add(EsUtils.fieldAggregation(searchRequestBuilder, "design"));
@@ -69,7 +80,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public ServiceMultiResult<HouseBucketDto> mapAggregate(String cityEnName) {
+    public ServiceMultiResult<HouseBucketDto> mapAggregate(String cityName) {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type).
                 //暂时还没有城市字段--待添加
                         addAggregation(AggregationBuilders.terms("regionAgg").field("region.keyword"));
@@ -86,23 +97,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         return new ServiceMultiResult<>(buckets, response.getHits().getTotalHits());
     }
 
-    //
-    @Override
-    public List<House> listByPage(Integer currentPage, Integer pageSize, String sortField) {
-        SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type);
-        if (CommonConstant.SORT_DEFAULT_DESC.equals(sortField)) {
-            requestBuilder.addSort(SortBuilders.scoreSort());
-        } else {
-            requestBuilder.addSort(SortBuilders.fieldSort(sortField).order(SortOrder.DESC));
-        }
-        requestBuilder.setFrom((currentPage - 1) * pageSize).setSize(pageSize);
-
-        log.debug(requestBuilder.toString());
-        SearchResponse response = requestBuilder.get();
-        return EsUtils.hitsToBeans(response.getHits());
-    }
-
-
     @Override
     public House getById(String id) {
         GetResponse response = client.prepareGet(index, type, id).get();
@@ -113,6 +107,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public ServiceMultiResult<House> searchHouse(QueryParamDto queryParam, String orderMode, Integer offset, Integer limit) {
         BoolQueryBuilder qb = QueryBuilders.boolQuery();
+        qb.filter(QueryBuilders.termQuery("cityName", queryParam.getCityName()));
         /*
         价格条件
          */
@@ -149,7 +144,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         /*
         其他属性条件
          */
-        qb.must(EsUtils.fieldQuery("cityName", queryParam.getHouseType()));
         qb.must(EsUtils.fieldQuery("houseType", queryParam.getHouseType()));
         qb.must(EsUtils.fieldQuery("layout", queryParam.getLayout()));
         qb.must(EsUtils.fieldQuery("floor", queryParam.getFloor()));
@@ -162,9 +156,11 @@ public class SearchRepositoryImpl implements SearchRepository {
         keyword查询
          */
         if (queryParam.getKeyword() != null && !StringUtils.isBlank(queryParam.getKeyword())) {
-            qb.must(QueryBuilders.matchQuery("title", queryParam.getKeyword()))
+            qb.must(QueryBuilders.boolQuery()
+                    .should(QueryBuilders.matchQuery("title", queryParam.getKeyword())))
                     .should(QueryBuilders.matchQuery("houseType", queryParam.getKeyword()))
                     .should(QueryBuilders.matchQuery("community", queryParam.getKeyword()))
+                    .should(QueryBuilders.matchQuery("locals", queryParam.getKeyword()))
                     .should(QueryBuilders.matchQuery("region", queryParam.getKeyword()))
                     .should(QueryBuilders.matchQuery("layout", queryParam.getKeyword()));
         }
@@ -191,7 +187,7 @@ public class SearchRepositoryImpl implements SearchRepository {
          设置高亮
          */
         HighlightBuilder highlightBuilder = new HighlightBuilder();
-        highlightBuilder.field("title").field("houseType").field("layout").field("region")
+        highlightBuilder.field("title").field("houseType").field("layout").field("region").field("locals")
                 .preTags("<font style='color:red;size=20;'>")
                 .postTags("</font>");
         requestBuilder.setFrom(offset).setSize(limit).highlighter(highlightBuilder);
@@ -220,47 +216,100 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public ServiceResult<List<String>> suggest(String prefix) {
-        CompletionSuggestionBuilder suggestion = SuggestBuilders.completionSuggestion("title.suggest").prefix(prefix).size(10);
-
-        SuggestBuilder suggestBuilder = new SuggestBuilder();
-        suggestBuilder.addSuggestion("autocomplete", suggestion);
-
-        SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).suggest(suggestBuilder);
-
-        log.debug(requestBuilder.toString());
-
-        SearchResponse response = requestBuilder.get();
-        Suggest suggest = response.getSuggest();
-        if (suggest == null) {
-            return ServiceResult.of(new ArrayList<>());
+    public ServiceMultiResult<House> adminQueryHouse(DatatableSearch searchBody) {
+        BoolQueryBuilder qb = QueryBuilders.boolQuery();
+        if (searchBody.getCity() != null) {
+            qb.filter(QueryBuilders.termQuery("cityName", searchBody.getCity()));
         }
-        Suggest.Suggestion result = suggest.getSuggestion("autocomplete");
-        int maxSuggest = 0;
-        Set<String> suggestSet = new HashSet<>();
-        for (Object term : result.getEntries()) {
-            if (term instanceof CompletionSuggestion.Entry) {
-                CompletionSuggestion.Entry item = (CompletionSuggestion.Entry) term;
-
-                if (item.getOptions().isEmpty()) {
-                    continue;
-                }
-
-                for (CompletionSuggestion.Entry.Option option : item.getOptions()) {
-                    String tip = option.getText().string();
-                    if (suggestSet.contains(tip)) {
-                        continue;
-                    }
-                    suggestSet.add(tip);
-                    maxSuggest++;
-                }
-            }
-            if (maxSuggest > 5) {
-                break;
-            }
+        if (Strings.isNotBlank(searchBody.getTitle())) {
+            qb.must(QueryBuilders.matchQuery("title", searchBody.getTitle()));
         }
-        List<String> suggests = Arrays.asList(suggestSet.toArray(new String[]{}));
+        Date minTime = searchBody.getCreateTimeMin();
+        Date maxTime = searchBody.getCreateTimeMax();
+        if (minTime != null && maxTime != null) {
+            qb.must(QueryBuilders.rangeQuery("createTime").gte(minTime).lte(maxTime));
+        }
+        String direction = searchBody.getDirection();
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index).setTypes(type).setQuery(qb);
+        if ("desc".equals(direction)) {
+            searchRequestBuilder.addSort(SortBuilders.fieldSort(searchBody.getOrderBy()).order(SortOrder.DESC));
+        } else {
+            searchRequestBuilder.addSort(SortBuilders.fieldSort(searchBody.getOrderBy()).order(SortOrder.ASC));
+        }
+        log.debug(searchRequestBuilder.toString());
+        SearchResponse response = searchRequestBuilder.get();
+        List<House> houses = EsUtils.hitsToBeans(response.getHits());
+        return new ServiceMultiResult<>(houses, response.getHits().totalHits);
+    }
 
+    @Override
+    public ServiceResult<List<String>> suggest(String prefix, String cityName) {
+
+        SearchRequest request = new SearchRequest().indices(index).types(type);
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.termQuery("cityName", cityName))
+                .must(QueryBuilders.matchQuery("title", prefix));
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+                .query(boolQuery).sort(SortBuilders.scoreSort()).from(0).size(5)
+                .fetchSource("title", "");
+
+        request.source(searchSourceBuilder);
+        List<String> suggests = new ArrayList<>();
+        try {
+            SearchResponse response = client.search(request).get();
+            for (SearchHit hit : response.getHits()) {
+                Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+                suggests.add((String) sourceAsMap.get("title"));
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.error(e.getMessage());
+        }
         return ServiceResult.of(suggests);
+
+
+//        CompletionSuggestionBuilder suggestion = SuggestBuilders
+//                .completionSuggestion("title.suggest")
+//                .prefix(prefix).size(10);
+//
+//        SuggestBuilder suggestBuilder = new SuggestBuilder();
+//        suggestBuilder.addSuggestion("autocomplete", suggestion);
+//
+//        SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type)
+//                .setQuery(QueryBuilders.boolQuery().filter(QueryBuilders.termQuery("cityName", cityName)))
+//                .suggest(suggestBuilder);
+//
+//        log.debug(requestBuilder.toString());
+//
+//        SearchResponse response = requestBuilder.get();
+//        Suggest suggest = response.getSuggest();
+//        if (suggest == null) {
+//            return ServiceResult.of(new ArrayList<>());
+//        }
+//        Suggest.Suggestion result = suggest.getSuggestion("autocomplete");
+//        int maxSuggest = 0;
+//        Set<String> suggestSet = new HashSet<>();
+//        for (Object term : result.getEntries()) {
+//            if (term instanceof CompletionSuggestion.Entry) {
+//                CompletionSuggestion.Entry item = (CompletionSuggestion.Entry) term;
+//
+//                if (item.getOptions().isEmpty()) {
+//                    continue;
+//                }
+//
+//                for (CompletionSuggestion.Entry.Option option : item.getOptions()) {
+//                    String tip = option.getText().string();
+//                    if (suggestSet.contains(tip)) {
+//                        continue;
+//                    }
+//                    suggestSet.add(tip);
+//                    maxSuggest++;
+//                }
+//            }
+//            if (maxSuggest > 5) {
+//                break;
+//            }
+//        }
+//        List<String> suggests = Arrays.asList(suggestSet.toArray(new String[]{}));
     }
 }

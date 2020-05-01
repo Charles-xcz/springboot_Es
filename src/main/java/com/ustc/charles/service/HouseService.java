@@ -16,7 +16,6 @@ public interface HouseService {
      */
     ServiceResult<House> save(HouseForm houseForm);
 
-    ServiceMultiResult<House> adminQuery(DatatableSearch searchBody);
 
     ServiceResult update(HouseForm houseForm);
 

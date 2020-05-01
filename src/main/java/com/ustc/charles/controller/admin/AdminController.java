@@ -13,6 +13,7 @@ import com.ustc.charles.entity.ServiceResult;
 import com.ustc.charles.model.House;
 import com.ustc.charles.model.SupportAddress;
 import com.ustc.charles.service.AddressService;
+import com.ustc.charles.service.EsHouseService;
 import com.ustc.charles.service.HouseService;
 import com.ustc.charles.service.impl.QiNiuServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ public class AdminController {
     private AddressService addressService;
     @Autowired
     private HouseService houseService;
+    @Autowired
+    private EsHouseService esHouseService;
 
     /**
      * 后台管理中心
@@ -85,7 +88,7 @@ public class AdminController {
     @PostMapping("/houses")
     @ResponseBody
     public ApiDataTableResponse houses(@ModelAttribute DatatableSearch searchBody) {
-        ServiceMultiResult<House> result = houseService.adminQuery(searchBody);
+        ServiceMultiResult<House> result = esHouseService.adminQuery(searchBody);
         ApiDataTableResponse response = new ApiDataTableResponse(ApiResponse.Status.SUCCESS);
         response.setData(result.getResult());
         response.setRecordsFiltered(result.getTotal());
@@ -94,10 +97,18 @@ public class AdminController {
         return response;
     }
 
+    @GetMapping("/house/operate/{id}/{op}")
+    @ResponseBody
+    public ApiResponse deleteHouse(@PathVariable("id") Long id, @PathVariable("op") Integer op) {
+        if (op == 3) {
+            houseService.deleteHouse(id);
+        }
+        return ApiResponse.ofSuccess(ApiResponse.Status.SUCCESS);
+    }
+
+
     /**
      * 新增房源功能页
-     *
-     * @return
      */
     @GetMapping("/add/house")
     public String addHousePage() {
@@ -140,10 +151,6 @@ public class AdminController {
 
     /**
      * 新增房源接口
-     *
-     * @param houseForm
-     * @param bindingResult
-     * @return
      */
     @PostMapping("/add/house")
     @ResponseBody
@@ -208,14 +215,5 @@ public class AdminController {
         ApiResponse response = ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
         response.setMessage(result.getMessage());
         return response;
-    }
-
-    @GetMapping("/house/operate/{id}/{op}")
-    @ResponseBody
-    public ApiResponse deleteHouse(@PathVariable("id") Long id, @PathVariable("op") Integer op) {
-        if (op == 3) {
-            houseService.deleteHouse(id);
-        }
-        return ApiResponse.ofSuccess(ApiResponse.Status.SUCCESS);
     }
 }

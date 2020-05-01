@@ -17,15 +17,15 @@ public class FieldAttributeDto {
     public static final Map<String, String> FIELD_TO_NAME = new HashMap<>();
 
     static {
-        FIELD_TO_NAME.put("cityName", "城市");
+        FIELD_TO_NAME.put("region", "区域");
+        FIELD_TO_NAME.put("locals", "地区");
+        FIELD_TO_NAME.put("community", "小区");
         FIELD_TO_NAME.put("houseType", "类型");
         FIELD_TO_NAME.put("layout", "布局");
         FIELD_TO_NAME.put("floor", "楼层");
         FIELD_TO_NAME.put("design", "设计");
         FIELD_TO_NAME.put("decorate", "装修");
         FIELD_TO_NAME.put("liftProportion", "电梯");
-        FIELD_TO_NAME.put("region", "地区");
-        FIELD_TO_NAME.put("community", "社区");
     }
 
     /**
